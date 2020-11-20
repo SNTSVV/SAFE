@@ -1,0 +1,3 @@
+[submodule "StressTesting"]
+	path = StressTesting
+	url = https://gitlab.uni.lu/luxspace-project/rtanalysis/rta_java
