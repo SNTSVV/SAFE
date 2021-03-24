@@ -5,23 +5,22 @@
 # -r: RUN_MAX in settings.json, the number of experiments
 # --runID: RUN_NUM in settings.json, Identity of the experiments, if set runID, P1-StressTesting.jar do experiment only one time even if the RUN_MAX is greater than 1.
 # -b: BASE_PATH in settings.json, Output path of the Phase 1
-java -Xms4G -Xmx10G -jar artifacts/P1-StressTesting.jar -r 1 --runID 1 -b results/SAFE_GASearch
+java -Xms4G -Xmx10G -jar artifacts/P1-SAFESearch.jar -b results/SAFE_GASearch
 
 
 # Feature reduction and treating imbalanced data
-# 02_features.R <BASE_PATH of P1> <Output path of this script>
-Rscript R/02_features.R results/SAFE_GASearch analysis/02_features
+# features.R <BASE_PATH of P1>
+# This code generate logistic regression model and save the formula into <BASE_PATH>/_formula/formula
+Rscript scripts/Phase2/features.R results/SAFE_GASearch _results _formula
 
 
-# 03_prune_input.R <BASE_PATH of P1> <Output path of this script>
-Rscript R/03_prune_input.R results/TritonX analysis/03_prune
+# prune_input.R <BASE_PATH of P1> <Output path of this script>
+Rscript scripts/Phase2/prune_input.R results/SAFE_GASearch _results _formula
 
 
 # Examples of Phase 2
-# -w: WORKNAME in settings.json, the output folder name which will be located in EXTEND_PATH (=<BASE_PATH>/refinements)
 # -b: BASE_PATH in settings.json, Output path of the Phase 1
-# -runID: RUN_NUM in settings.json, Identity of the experiments of Phase 1
-# --secondRuntype: the sampling method [distance, random]
-java -Xms4G -Xmx10G -jar artifacts/P2-Refinements.jar -w Updates100 -b results/SAFE_GASearch --runID 1 --secondRuntype distance
+# --samplingMethod: the sampling method [distance, random]
+java -Xms4G -Xmx10G -jar artifacts/P2-Refinements.jar -b results/SAFE_GASearch --samplingMethod distance
 
 
