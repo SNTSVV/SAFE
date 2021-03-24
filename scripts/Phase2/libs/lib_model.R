@@ -20,7 +20,7 @@ if (Sys.getenv("RSTUDIO")==1){
     ret <- 0
     for (i in 1:length(tasks)){ 
         if (tasks[[i]]==base) {
-            ret = i
+            ret <- i
         }
     }
     return (ret)
@@ -127,6 +127,10 @@ if (Sys.getenv("RSTUDIO")==1){
     return(value)
 }
 
+..check_including_quadratic<-function(terminfo){
+    return (2 %in% terminfo$target)
+}
+
 # ************************************************
 # To generate model line function
 #   - model with probability threshold
@@ -145,13 +149,11 @@ generate_line_function<-function(model, P, targetY, minY, maxY){
     info <- ..parsing_coef(model$coefficients, TaskIDs, targetY)
     # print(info)
     
-    if ((2 %in% info$target)==FALSE) {
+    if (..check_including_quadratic(info)==FALSE) {
         # 1st order
         func<-function(X){
-            # removed because the slow performance
-            # b = ..term_calculator(info[info$target==1,], X)
-            # c = ..term_calculator(info[info$target==0,], X) - log(P/(1-P))
-            b=c=0
+            b<-0
+            c<-0
             for(i in 1:nrow(info)){
                 base <- ifelse(info$index[i]!=0, X[info$index[i]], 1)
                 value <- (info$coef[i]*base^info$poly[i])
@@ -161,39 +163,14 @@ generate_line_function<-function(model, P, targetY, minY, maxY){
             c <- c - log(P/(1-P))
             return (c/-b)
         }
-        # a = list()
-        # b = list()
-        # c = 0
-        # k = 0
-        # print(info)
-        # for(i in 1:nrow(info)){
-        #     row <- info[i,]
-        #     if(row$index =0 && row$target==1) k <- row$coef[i]
-        #     if(row$target==0 && row$poly==2){
-        #         a[row$index] <- ifelse(is.null(a[row$index])==TRUE, row$coef, a[row$index] + info$coef)
-        #     }
-        #     if(row$target==0 && row$poly==1){
-        #         print(b)
-        #         if(is.null(b[row$index])==TRUE) { b[row$index] <- row$coef }
-        #         else { b[row$index] <- b[row$index] + row$coef }
-        #     }
-        #     if(row$index==0 && row$target==0 && row$poly==0) c <- c + row$coef
-        # }
-        # c <- c - log(P/(1-P))
-        # a <- as.interger(a)
-        # b <- as.interger(b)
-        # print(sprintf("a=%.4f, b=%.4f, c=%.4f / k=%.4f", a, b, c, k))
-        # func<-function(X){
-        #     return ( (sum(a*X^2) + sum(b*X) + c) / -k )
-        # }
     }else{
         # 2nd order (use sqrt )
         func<-function(X){
-            # removed because the slow performance
-            # a = ..term_calculator(info[info$target==2,], X)
-            # b = ..term_calculator(info[info$target==1,], X)
-            # c = ..term_calculator(info[info$target==0,], X) - log(P/(1-P))
-            a=b=c=0
+            a <- 0
+            b <- 0
+            c <- 0
+
+            # Separate each term by terms (quadratic, linear, constant)
             for(i in 1:nrow(info)){
                 base <- ifelse(info$index[i]!=0, X[info$index[i]], 1)
                 value <- (info$coef[i]*base^info$poly[i])
@@ -203,62 +180,89 @@ generate_line_function<-function(model, P, targetY, minY, maxY){
                 if (info$target[i]==0) c <- c + value
             }
             c <- c - log(P/(1-P))
-            
-            inV = (b^2)-(4*a*c)
+
+            # Solve quadratic formula (x = (-b \pm sqrt(b^2 - 4ac)) /2a)
+            inV <- (b^2)-(4*a*c)
             if (inV<0){
                 # print(sprintf("return Inf because inV:%.6f", inV))
                 return (Inf)
             }
-            s1 = (-b + sqrt(inV)) / (2*a)
-            s2 = (-b - sqrt(inV)) / (2*a)
-            if (s1>=minY && s1 <=maxY){
-                return (s1)
-            } else if (s2>=minY && s2 <=maxY){
-                return (s2)
-            } else {
-                # print(sprintf("return Inf %.2f - (s1:%.4f, s2:%.4f) [%.4f,%.4f ]", X, s1, s2, minY, maxY))
+            s1 <- (-b + sqrt(inV)) / (2*a)
+            s2 <- (-b - sqrt(inV)) / (2*a)
+
+            # return values
+            answers <- data.frame()
+            if (minY<=s1 && s1 <=maxY){
+                answers <- rbind(answers, s1)
+            }
+            if (minY<=s2 && s2<=maxY){
+                answers <- rbind(answers, s2)
+            }
+            if (nrow(answers)==0){
+                # no answers in the range [minY, maxY]
                 return (Inf)
             }
+            return ( as.vector(answers[[1]]) )
         }
     }
     return(func)
 } # line function
 
-# ************************************************
-# To get points on the function in range of X
-#   - function which f(X)
+#************************************************
+# get points by line function (we use this points as a function line instead of the actual function)
+#   - actual function does not working properly in ggplot
+#   - fun: a function to get points
 #   - minX, maxY: range of X
 #   - nPoints: number of points
 get_func_points<-function(fun, minX, maxX, nPoints){
+    # find x-axis based points
+    ..gen_points<-function(by){
+        df <- data.frame()
+        x <- minX
+        while(x< maxX){
+            v <- fun(x)     # calculate
+            if (!(length(v)==1 && is.infinite(v))){
+                df <- rbind(df, data.frame(x=x, y=v))
+            }
+            x <- x + by
+        }
+        v <- fun(maxX)    # calculate
+        if (!(length(v)==1 && is.infinite(v))){
+            df <- rbind(df, data.frame(x=x, y=v))
+        }
+        return(df)
+    }
+    ..find_rough_point<-function(df){
+        maxDiff <-0
+        maxDiffIdx <- 0
+        for ( idx in 2:nrow(df)){
+            diff <- df$y[idx] - df$y[idx-1]
+            if (diff>maxDiff){
+                maxDiff <- diff
+                maxDiffIdx <- idx
+            }
+        }
+        ret <- list()
+        ret[["idx"]] <- maxDiffIdx
+        ret[["diff"]] <- maxDiff
+        return (ret)
+    }
 
-    # generate x values
-    candidates <- c(minX)
-    by <- (maxX - minX) / nPoints
-    x <- 0
-    while(x< maxX){
-        x <- x + by
-        if (x>=minX)
-            candidates <- c(candidates, x)
+    by <- (maxX - minX) / nPoints   # delta between points
+    points <- ..gen_points(by)
+    points <- points[order(points$y),]   # sort by y
+    rough <- ..find_rough_point(points)
+    maxrange <- max(points$y) - min(points$y)
+    if (rough$diff> maxrange * 0.05){  # If the greatest diff is over 5% of maxrange, add more points
+        minX <- points[rough$idx,]$x - by*10
+        maxX <- points[rough$idx,]$x + by*10
+        by <- (maxX - minX) / nPoints # new delta between points
+        points2 <- ..gen_points(by)
+        points <- rbind(points, points2)
     }
-    candidates <- c(candidates, maxX)
-    
-    # generate y values
-    vX <- c()
-    vY <- c()
-    for(value in candidates){
-        tryCatch({
-            v<-fun(value)    
-        }, error = function(e) {
-            v<-Inf
-        })
-        if (v==Inf) next
-        if (v==0) next
-        vX <- c(vX, value)
-        vY <- c(vY, v)
-    }
-    return (data.frame("x"=vX, "y"=vY))
+
+    return (points)
 }
-
 
 #############################################
 # related get intercept

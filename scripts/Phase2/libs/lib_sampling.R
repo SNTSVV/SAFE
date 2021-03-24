@@ -252,7 +252,7 @@ sample_based_euclid_distance <- function(tasknames, model, nSample, nCandidate, 
     if (dpoint!=0) cat(sprintf("%d points sampling", nSample))
     for(x in 1:maxTry){
         #cat(sprintf("Try %d ...", x))
-        if(count > nSample) break
+        if(count >= nSample) break
         if (dpoint!=0 && count%%dpoint==0){
             cat( ifelse(count%%(dpoint*5)==0, "|", ".") )
         }
@@ -269,6 +269,51 @@ sample_based_euclid_distance <- function(tasknames, model, nSample, nCandidate, 
 
     if (dpoint!=0) cat("finished\n")
     return (samples)
+}
+
+
+# ************************************************
+# find available X range of a function
+# this is only available a two-dimensional function (X, Y)
+find_available_x_range<-function(fun, minX, maxX, stepRate=0.02, density=0.001){
+    ret <- list()
+    ret[["min"]]<-find_available_x_min(fun, minX, maxX, stepRate, density)
+    ret[["max"]]<-find_available_x_max(fun, minX, maxX, stepRate, density)
+    return (ret)
+}
+find_available_x_min <- function(fun, minX, maxX, stepRate=0.02, density=0.001){
+    L <- minX
+    R <- maxX
+    x <- L
+    step <- (R-L)*stepRate
+    if(step<density) return (R)
+    while(x<=R){  # check current density
+        v<-fun(x)
+        if (!(length(v)==1 && is.infinite(v))){ # if it finds non-infinite value
+            x <- find_available_x_min(fun, x-step, x, stepRate, density)
+            break
+        }
+        x <- x + step
+    }
+    if (x<minX) return(minX)
+    return (x)
+}
+find_available_x_max <- function(fun, minX, maxX, stepRate=0.02, density=0.001){
+    L <- minX
+    R <- maxX
+    x <- R
+    step <- (R-L)*stepRate
+    if(step<density) return (L)
+    while(x>=L){  # check current density
+        v<-fun(x)
+        if (!(length(v)==1 && is.infinite(v))){ # if it finds non-infinite value
+            x <- find_available_x_max(fun, x, x+step, stepRate, density)
+            break
+        }
+        x <- x-step
+    }
+    if (x>maxX) return(maxX)
+    return (x)
 }
 
 # ************************************************
@@ -288,35 +333,40 @@ sample_based_euclid_distance <- function(tasknames, model, nSample, nCandidate, 
     for ( x in pointsIDs){ points<- cbind(points, candidates[[sprintf("T%d", x)]]) }
     points<- as.data.frame(points)
     colnames(points) <- sprintf("T%d", pointsIDs)
-    
+
+    # generate a model line function
+    if (isGeneral==TRUE){
+        fx<-generate_line_function(model, P, answerID, TASK_INFO$WCET.MIN[answerID]*UNIT, TASK_INFO$WCET.MAX[answerID]*UNIT)
+    } else{
+        fx<-get_model_func_quadratic(model, P, TASK_INFO$WCET.MIN[answerID]*UNIT, TASK_INFO$WCET.MAX[answerID]*UNIT)
+    }
+    xID <-pointsIDs[1]
+    xRange <- find_available_x_range(fx, TASK_INFO$WCET.MIN[[xID]]*UNIT, TASK_INFO$WCET.MAX[[xID]]*UNIT)
+
     # find minimum index
     min_Index <- 0
     min_Value <- 2^.Machine$double.digits
     for(px in 1:nrow(points)){
-        if (isGeneral==TRUE){
-            fx<-generate_line_function(model, P, answerID, TASK_INFO$WCET.MIN[answerID]*UNIT, TASK_INFO$WCET.MAX[answerID]*UNIT)
-        } else{
-            fx<-get_model_func_quadratic(model, P, TASK_INFO$WCET.MIN[answerID]*UNIT, TASK_INFO$WCET.MAX[answerID]*UNIT)
-        }
-
         # create distance function
         pointX <- as.vector(points[px,])
         pointY <- answers[px]
         dist_func<-function(X){
             # cat(sprintf("X:%s\n",..to_string(X)))
+            retY <- fx(X)
+            if (length(retY)==1 && is.infinite(retY)) {
+                return (-2^.Machine$double.digits) # largest value
+            }
             dx <- Norm(X - pointX)  # calculates sqrt((X[1]-pointX[1])^2 + ... + (X[n]-pointX[n])^2)
-            dy <- fx(X) - pointY
+            dy <- min(abs(retY - pointY)) # to proceed multi valued return of fx, we select the minimum distance from pointY
             dist<- sqrt(dx^2 + dy^2)
             return (dist)
         }
 
         # find minimum distance in range (WCET.MIN, WCET.MAX) of the first points
-        xID <- pointsIDs[1]    # select one of the dimensions
         v <- NULL
         tryCatch({
-            intercepts<-get_intercepts(model, P, targetIDs)
-            v <- fminbnd(dist_func, TASK_INFO$WCET.MIN[[xID]]*UNIT, TASK_INFO$WCET.MAX[[xID]]*UNIT) #
-            # v<-fminbnd(dist_func, TASK_INFO$WCET.MIN[[xID]]*UNIT, intercepts[[sprintf("T%d",xID)]]) #TASK_INFO$WCET.MAX[[xID]]*UNIT)
+            # This function should be set an available range
+            v <- fminbnd(dist_func, xRange$min, xRange$max)#TASK_INFO$WCET.MIN[[xID]]*UNIT, TASK_INFO$WCET.MAX[[xID]]*UNIT) #
             # print(sprintf("xmin=%.4f, fmin=%.4f, niter=%d, estim.prec=%e", v$xmin, v$fmin, v$niter, v$estim.prec))
         },error = function(e) {
             #cat(sprintf("Failed to find minDistance candidate %d\n", px))

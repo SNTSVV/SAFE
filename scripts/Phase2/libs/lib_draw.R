@@ -117,9 +117,9 @@ get_WCETspace_plot<- function(
     for(prob in probLines){
         if(showMessage) cat(sprintf("\tAdding model line with %5.2f%% ....\n",prob*100))
         
-        funcLine <- generate_line_function(mdx, prob, yID, minY=0, maxY=TASK_INFO$WCET.MAX[[yID]]*UNIT)
+        funcLine <- generate_line_function(mdx, prob, yID, minY=TASK_INFO$WCET.MIN[[yID]]*UNIT, maxY=TASK_INFO$WCET.MAX[[yID]]*UNIT)
         # print(funcLine)
-        fx <- get_func_points(funcLine, 0, TASK_INFO$WCET.MAX[[xID]]*UNIT, nPoints=300)
+        fx <- get_func_points(funcLine, TASK_INFO$WCET.MIN[[xID]]*UNIT, TASK_INFO$WCET.MAX[[xID]]*UNIT, nPoints=300)
         # xfun = seq(0, TASK_INFO$WCET.MAX[[xID]]*UNIT)
         # yfun = sapply(xfun, funcLine)
         # fx = data.frame(x=xfun, y=yfun)
@@ -147,7 +147,8 @@ get_WCETspace_plot<- function(
             
             g<- g + 
                 # stat_function(fun=funcLine, color="red", alpha=0.9, linetype="dashed")+
-                geom_line(data=fx, aes(x=x, y=y), color=lineColor, alpha=0.9, size=1, linetype="dashed")+
+                #geom_line(data=fx, aes(x=x, y=y), color=lineColor, alpha=0.9, size=1, linetype="dashed")+
+                geom_point(data=fx, aes(x=x, y=y), color=lineColor, alpha=0.9, size=1)+
                 annotate("text", x=xpos, y=ypos, label = sprintf("P=%.2f%%", prob*100), color=lineColor, size=5, hjust=-0.1, vjust=0.1)
         } else {
             cat(sprintf("\tCannot draw a line with %.2f%% in specified area\n", prob*100))
