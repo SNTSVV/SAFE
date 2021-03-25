@@ -72,12 +72,12 @@ parsingParameters <- function(filepath) {
 ######################################################
 # get a list of uncertain tasks
 ######################################################
-get_uncertain_tasks<-function(tasks){
-    diffWCET <- tasks$WCET.MAX - tasks$WCET.MIN
-    tasks <- c()
-    for(x in 1:length(diffWCET)){
-       if (diffWCET[x] <= 0) next
-       tasks <- c(tasks, sprintf("T%d",as.integer(x)))
-    }
-    return(tasks)
-}
+#get_uncertain_tasks<-function(tasks){
+#    diffWCET <- tasks$WCET.MAX - tasks$WCET.MIN
+#    tasks <- c()
+#    for(x in 1:length(diffWCET)){
+#       if (diffWCET[x] <= 0) next
+#       tasks <- c(tasks, sprintf("T%d",as.integer(x)))
+#    }
+#    return(tasks)
+#}

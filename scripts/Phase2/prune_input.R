@@ -110,19 +110,11 @@ cat(sprintf(":: BalanceRate: %.2f, BalanceSide: %s, balanceProb: %.4f \n", balan
 uncertainIDs <- get_base_names(names(base_model$coefficients), isNum=TRUE)
 
 ################################################################################
-# showing
-# print(sprintf("balanceProb=%.2f%%",balanceProb*100))
-if (printModel){
+# printing model into file
+if (printModel && length(uncertainIDs)==2){
     cat(":: Print model before...\n")
-    if (length(uncertainIDs)<2){
-        cat(" not available (number of uncertain tasks: 1).\n")
-        quit(0);
-    }
-
-    g<-get_WCETspace_plot(data=training, form=model.formula,
-                          xID=uncertainIDs[2], yID=uncertainIDs[1],
-                          showTraining=TRUE, nSamples=0,
-                          probLines=c(), showThreshold=TRUE)
+    g<-get_WCETspace_plot(data=training, form=model.formula, xID=uncertainIDs[2], yID=uncertainIDs[1],
+                          showTraining=TRUE, nSamples=0, probLines=c(), showThreshold=TRUE)
     ggsave(modelBeforeFile, g,  width=7, height=5)
 }
 
@@ -166,19 +158,11 @@ if(balanceRate<0.99){
 }
 
 ################################################################################
-# showing
-# print(sprintf("balanceProb=%.2f%%",balanceProb*100))
-if (printModel){
+# printing model into file
+if (printModel && length(uncertainIDs)==2){
     cat(":: Print model after...\n")
-    if (length(uncertainIDs)<2){
-        cat(" not available (number of uncertain tasks: 1).\n")
-        quit(0);
-    }
-
-    g<-get_WCETspace_plot(data=training, form=model.formula,
-                          xID=uncertainIDs[2], yID=uncertainIDs[1],
-                          showTraining=TRUE, nSamples=0,
-                          probLines=c(), showThreshold=TRUE)
+    g<-get_WCETspace_plot(data=training, form=model.formula, xID=uncertainIDs[2], yID=uncertainIDs[1],
+                          showTraining=TRUE, nSamples=0, probLines=c(), showThreshold=TRUE)
     ggsave(modelAfterFile, g,  width=7, height=5)
 }
 cat("Done.\n")

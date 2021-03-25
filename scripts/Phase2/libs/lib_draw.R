@@ -1,16 +1,35 @@
-# Library for drawing 
+# Library for drawing
 cat("loading lib_draw.R...\n")
 if (Sys.getenv("RSTUDIO")==1){
-    # Add library and dependency
-    # source('conf.R')
+    library(scales)
+    library(ggplot2)
+    # source("conf.R")                  # cbPalette
     source("libs/lib_data.R")         # get_task_names
     source("libs/lib_model.R")        # get_intercepts, get_bestsize_point, get_func_points
     source("libs/lib_evaluate.R")     # find_noFPR
-    source("libs/lib_sampling.R") 
+    source("libs/lib_sampling.R")
 }
-library(scales)
-library(ggplot2)
 
+select_annotate_pos<-function(fx, xID, yID)
+{
+    if(TASK_INFO$WCET.MAX[[yID]]>TASK_INFO$WCET.MAX[[xID]]){
+        for(i in nrow(fx):1){
+            if (fx$x[[i]] <0) break
+        }
+        xpos <- 0
+        ypos <- fx$y[[i]]
+    }else{
+        for(i in 1:nrow(fx)){
+            if (fx$y[[i]] <0) break
+        }
+        xpos <- fx$x[[i]]
+        ypos <- 0
+    }
+    ret <- list()
+    ret[["x"]] <- xpos
+    ret[["y"]] <- ypos
+    return (ret)
+}
 
 get_WCETspace_plot<- function(
     data, form, 
@@ -97,13 +116,14 @@ get_WCETspace_plot<- function(
     if (learnModel==FALSE){
         return (g)
     }
-        
+
     # generate model & find threhold
-    mdx <- glm(formula = form, family = "binomial", data = uData)
-    uncertainIDs <- get_base_names(names(mdx$coefficients), isNum=TRUE)
-    threshold <- find_noFPR(mdx, uData, precise=0.0001)
-    # uppper_threshold <- find_noFNR(mdx, uData, precise=0.0001)
-    
+    if (is.null(form)==FALSE){
+        mdx <- glm(formula = form, family = "binomial", data = uData)
+        threshold <- find_noFPR(mdx, uData, precise=0.0001)
+        # uppper_threshold <- find_noFNR(mdx, uData, precise=0.0001)
+    }
+
     # generate sample if user wants
     if (nSamples!=0){
         if(showMessage) cat(sprintf("\tAdding sampling points with %5.2f%% as a threhold ....\n",threshold*100))
@@ -111,45 +131,22 @@ get_WCETspace_plot<- function(
         samples <- sample_based_euclid_distance(tnames, mdx, nSample=nSamples, nCandidate=20, P=threshold)
         g <- g + geom_point( data=samples, aes(x=samples[[sprintf("T%d",xID)]], y=samples[[sprintf("T%d",yID)]]),  size=0.3, alpha=0.5)
     }
-    
+
     # Add probability lines
     if (showThreshold == TRUE) probLines <- c(probLines, threshold)#, uppper_threshold)
     for(prob in probLines){
         if(showMessage) cat(sprintf("\tAdding model line with %5.2f%% ....\n",prob*100))
-        
-        funcLine <- generate_line_function(mdx, prob, yID, minY=TASK_INFO$WCET.MIN[[yID]]*UNIT, maxY=TASK_INFO$WCET.MAX[[yID]]*UNIT)
-        # print(funcLine)
-        fx <- get_func_points(funcLine, TASK_INFO$WCET.MIN[[xID]]*UNIT, TASK_INFO$WCET.MAX[[xID]]*UNIT, nPoints=300)
-        # xfun = seq(0, TASK_INFO$WCET.MAX[[xID]]*UNIT)
-        # yfun = sapply(xfun, funcLine)
-        # fx = data.frame(x=xfun, y=yfun)
-        intercepts<-get_intercepts(mdx, prob, uncertainIDs)
 
-        # set threshold color and the others
+        funcLine <- generate_line_function(mdx, prob, yID, minY=TASK_INFO$WCET.MIN[[yID]]*UNIT, maxY=TASK_INFO$WCET.MAX[[yID]]*UNIT)
+        fx <- get_func_points(funcLine, TASK_INFO$WCET.MIN[[xID]]*UNIT, TASK_INFO$WCET.MAX[[xID]]*UNIT, nPoints=300)
         lineColor <- ifelse(threshold==prob, "blue", "black")
-        
+
+        # add line graph to the g
         if (nrow(fx)!=0){
-            if(TASK_INFO$WCET.MAX[[yID]]>TASK_INFO$WCET.MAX[[xID]]){
-                i<-nrow(fx)
-                for(i in nrow(fx):1){
-                    if (fx$x[[i]] <0) break
-                }
-                xpos <- 0
-                ypos <- fx$y[[i]]
-            }else{
-                i<-1
-                for(i in 1:nrow(fx)){
-                    if (fx$y[[i]] <0) break
-                }
-                xpos <- fx$x[[i]]
-                ypos <- 0
-            }
-            
-            g<- g + 
-                # stat_function(fun=funcLine, color="red", alpha=0.9, linetype="dashed")+
-                #geom_line(data=fx, aes(x=x, y=y), color=lineColor, alpha=0.9, size=1, linetype="dashed")+
+            pos <- select_annotate_pos(fx, xID, yID)
+            g<- g +
                 geom_point(data=fx, aes(x=x, y=y), color=lineColor, alpha=0.9, size=1)+
-                annotate("text", x=xpos, y=ypos, label = sprintf("P=%.2f%%", prob*100), color=lineColor, size=5, hjust=-0.1, vjust=0.1)
+                annotate("text", x=pos$x, y=pos$y, label = sprintf("P=%.2f%%", prob*100), color=lineColor, size=5, hjust=-0.1, vjust=0.1)
         } else {
             cat(sprintf("\tCannot draw a line with %.2f%% in specified area\n", prob*100))
         }
@@ -157,15 +154,15 @@ get_WCETspace_plot<- function(
 
     # Add Annotates
     for (i in 1:length(annotates)){
-        xpos = 0
-        ypos = TASK_INFO$WCET.MAX[yID]*UNIT - (i-1)*0.2
+        xpos <- 0
+        ypos <- TASK_INFO$WCET.MAX[yID]*UNIT - (i-1)*0.2
         if (length(annotatesLoc) > i){
-            xpos = annotatesLoc[i][1]
-            ypos = annotatesLoc[i][2]
+            xpos <- annotatesLoc[i][1]
+            ypos <- annotatesLoc[i][2]
         }
         g <- g + annotate("text", x = xpos, y = ypos, label = annotates[i], color="blue", size=3, hjust=0, vjust=-1)
     }
-    
+
     if (showBestPoint==TRUE){
         # generate model & find threhold
         mdb <- glm(formula = form, family = "binomial", data = data)
