@@ -9,9 +9,6 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
     ########################################################
     source("libs/lib_formula.R")  # get_raw_names, get_base_name does not need lib_data.R
 
-
-
-
     #############################################
     # calculate line function
     #############################################
