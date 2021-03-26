@@ -20,7 +20,7 @@ if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
     ########################################################
     #### get test data to give to predict function
     ########################################################
-    sample_by_random <- function(tasknames, nSample){
+    sample_by_random <- function(nSample){
         # This function generates random sample points within range of each tasks
         # dependency:
         #   - WCET.MIN and WCET.MAX in TASK_INFO(data.frame)
@@ -29,10 +29,15 @@ if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
         #   - nSample (int): the number of sample points
         # Output: sampled points(data.frame)
 
-        sample_ds <- data.frame()
+
+        tasknames <- c()
+        for(x in 1:nrow(TASK_INFO)){
+            tasknames<- c(tasknames, sprintf("T%d", x))
+        }
+
         # for each task,
-        for (tname in tasknames){
-            taskID <- strtoi(substring(tname, 2))
+        sample_ds <- data.frame()
+        for(taskID in 1:nrow(TASK_INFO)){
             if (TASK_INFO$WCET.MIN[[taskID]]==TASK_INFO$WCET.MAX[[taskID]]){
                 x <- TASK_INFO$WCET.MIN[[taskID]]
             }else{
@@ -63,7 +68,7 @@ if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
         # get task names
         samples <- data.frame()
         for(x in 1:nSample){
-            candidates <- sample_by_random(tasknames, nCandidate)
+            candidates <- sample_by_random(nCandidate)
             sample <- ..select_by_distance_old(candidates, model, P)
             samples <- rbind(samples, sample)
         }
@@ -112,7 +117,7 @@ if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
         # get task names
         samples <- data.frame()
         while(nrow(samples)<nPoints){
-            candidates <- sample_by_random(tasknames, nPoints)
+            candidates <- sample_by_random(nPoints)
             sample <- ..select_within_distance(candidates, model, P, min_dist)
             samples <- rbind(samples, sample)
         }
@@ -158,7 +163,7 @@ if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
         # get task names
         samples <- data.frame()
         while(nrow(samples)<nSample){
-            candidates <- sample_by_random(tasknames, 20)
+            candidates <- sample_by_random(20)
             sample <- ..select_range_distance(candidates, model, Ps-Prange, Ps+Prange, 0)
             samples <- rbind(samples, sample)
         }
@@ -210,7 +215,7 @@ if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
         # get task names
         samples <- data.frame()
         for(x in 1:nSample){
-            candidates <- sample_by_random(tasknames, nCandidate)
+            candidates <- sample_by_random(nCandidate)
             sample <- ..select_based_prob_distance(candidates, model, P)
             samples <- rbind(samples, sample)
         }
@@ -243,7 +248,7 @@ if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
     # generate WCET examples around model line (with threshold P)
     #  - generate n candidates and select one the shortest distance from the model
     #  - this function uses euclidian distance
-    sample_based_euclid_distance <- function(tasknames, model, nSample, nCandidate, P, isGeneral=TRUE){
+    sample_based_euclid_distance <- function(model, nSample, nCandidate, P, isGeneral=TRUE){
         maxTry <- nSample*10
         # get task names
         targetIDs <- get_base_names(names(model$coefficients), isNum=TRUE)
@@ -258,7 +263,7 @@ if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
             if (dpoint!=0 && count%%dpoint==0){
                 cat( ifelse(count%%(dpoint*5)==0, "|", ".") )
             }
-            candidates <- sample_by_random(tasknames, nCandidate)
+            candidates <- sample_by_random(nCandidate)
             sample <- ..select_based_euclid_distance(candidates, model, P, targetIDs, isGeneral)
             if (is.null(sample)) next;
             samples <- rbind(samples, sample)
@@ -353,30 +358,38 @@ if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
             pointX <- as.vector(points[px,])
             pointY <- answers[px]
             dist_func<-function(X){
-                # cat(sprintf("X:%s\n",..to_string(X)))
+                #cat(sprintf("X:%s, ",..to_string(X)))
                 retY <- fx(X)
+                #cat(sprintf("Y:%f, ",retY))
                 if (length(retY)==1 && is.infinite(retY)) {
                     return (-2^.Machine$double.digits) # largest value
                 }
-                dx <- Norm(X - pointX)  # calculates sqrt((X[1]-pointX[1])^2 + ... + (X[n]-pointX[n])^2)
+                dx <- norm(X-pointX, type="2")  # norm(c(2,3), type="2") == sqrt(2^2 + 3^2)
+                #dx <- Norm(X - pointX)  # calculates sqrt((X[1]-pointX[1])^2 + ... + (X[n]-pointX[n])^2)
                 dy <- min(abs(retY - pointY)) # to proceed multi valued return of fx, we select the minimum distance from pointY
                 dist<- sqrt(dx^2 + dy^2)
+                #cat(sprintf("dist:%f\n",dist))
                 return (dist)
             }
 
             # find minimum distance in range (WCET.MIN, WCET.MAX) of the first points
-            v <- NULL
+            fmin <- NULL
             tryCatch({
-                # This function should be set an available range
-                v <- fminbnd(dist_func, xRange$min, xRange$max)#TASK_INFO$WCET.MIN[[xID]]*UNIT, TASK_INFO$WCET.MAX[[xID]]*UNIT) #
-                # print(sprintf("xmin=%.4f, fmin=%.4f, niter=%d, estim.prec=%e", v$xmin, v$fmin, v$niter, v$estim.prec))
+                # fminbnd in pracma (This function should be set an available range)
+                #v <- fminbnd(dist_func, x0=xRange$min, xmin=xRange$min, xmax=xRange$max)#TASK_INFO$WCET.MIN[[xID]]*UNIT, TASK_INFO$WCET.MAX[[xID]]*UNIT) #
+                #fmin <- v$fmin
+                # fminbnd in nelder-mead (should be given the ragne...)
+                opt <- optimset(MaxFunEvals=200)
+                nm <- fminbnd(dist_func, x0=xRange$min, xmin=xRange$min, xmax=c(300), options=opt)#TASK_INFO$WCET.MIN[[xID]]*UNIT, TASK_INFO$WCET.MAX[[xID]]*UNIT) #xRange$max
+                #nm <- fminsearch(dist_func, x0=xRange$min, options=opt)#TASK_INFO$WCET.MIN[[xID]]*UNIT, TASK_INFO$WCET.MAX[[xID]]*UNIT) #
+                fmin <- neldermead.get(this=nm, key="fopt")
             },error = function(e) {
-                #cat(sprintf("Failed to find minDistance candidate %d\n", px))
+                message(sprintf("Failed to find minDistance candidate %d\n during fminbnd() in sampling",px), e)
             }) # try-catch
 
-            if (!is.null(v) && min_Value > v$fmin){
+            if (!is.null(fmin) && min_Value > fmin){
                 min_Index <- px
-                min_Value <- v$fmin
+                min_Value <- fmin
             }
         }
 

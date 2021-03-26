@@ -194,18 +194,18 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
                 s2 <- (-b - sqrt(inV)) / (2*a)
 
                 # return values
-                answers <- data.frame()
+                answers <- c()
                 if (minY<=s1 && s1 <=maxY){
-                    answers <- rbind(answers, s1)
+                    answers <- c(answers, s1)
                 }
                 if (minY<=s2 && s2<=maxY){
-                    answers <- rbind(answers, s2)
+                    answers <- c(answers, s2)
                 }
                 if (nrow(answers)==0){
                     # no answers in the range [minY, maxY]
                     return (Inf)
                 }
-                return ( as.vector(answers[[1]]) )
+                return ( answers )
             }
         }
         return(func)

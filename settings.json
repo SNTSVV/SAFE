@@ -35,13 +35,14 @@
   "PRE_TEST"            : false,
 
 //Second phase
-  "SAMPLING_METHOD"     : "random", //distance", // Sampling approach for the Phase 2, {"distance", "random"}
+  "SAMPLING_METHOD"     : "distance", //distance", // Sampling approach for the Phase 2, {"distance", "random"}
   "N_MODEL_UPDATES"     : 100,        // The number of model refinements
+  "N_SAMPLE_SOLUTONS"   : 10,
   "N_SAMPLE_CANDIDATES" : 20,         // The number of candidates for deciding one example for the distance-based sampling
   "MODEL_PROB_PRECISION": 0.0001,     // A precision of the classification threshold,
 
   "P2_ALGORITHM"        : "threshold",// the way of model refinement, we use only "threshold"
-  "USE_TEST_DATA"       : true,       // We load the test data from "<BASE_PATH>/_results/testdata.csv", it is applied to evaluate learned model
+  "USE_TEST_DATA"       : false,       // We load the test data from "<BASE_PATH>/_results/testdata.csv", it is applied to evaluate learned model
   "STOP_ACCEPT_RATE"    : 0.01,       // Not used, stopping criterion
   "STOP_CONDITION"      : false,      // Not used, Enable stopping creteria when the model refinements
 }
