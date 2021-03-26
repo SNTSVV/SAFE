@@ -201,7 +201,7 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
                 if (minY<=s2 && s2<=maxY){
                     answers <- c(answers, s2)
                 }
-                if (nrow(answers)==0){
+                if (length(answers)==0){
                     # no answers in the range [minY, maxY]
                     return (Inf)
                 }
