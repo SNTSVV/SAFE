@@ -1,10 +1,12 @@
+########################################################
 # pruning training data set for its balance
+########################################################
 if (!Sys.getenv("DEV_LIB_PRUNING", unset=FALSE)=="TRUE") {
     Sys.setenv("DEV_LIB_PRUNING"=TRUE)
     cat("loading lib_pruning.R...\n")
 
     ########################################################
-    # load dependencies
+    # pruning function
     ########################################################
     pruning <- function(data, side, intercepts, IDs){
         tnames <- sprintf("T%d",IDs)

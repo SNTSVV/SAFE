@@ -1,13 +1,18 @@
-# Library for evaluating model
-if (!Sys.getenv("DEV_LIB_EVALUATE", unset=FALSE)=="TRUE") {
-    Sys.setenv("DEV_LIB_EVALUATE"=TRUE)
-    cat("loading lib_evaluate.R...\n")
-    ########################################################
-    # load dependencies
-    ########################################################
+########################################################
+# load dependencies
+########################################################
+if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
     library(cubature)
     source("libs/lib_data.R")     # get_task_names
     source("libs/lib_metrics.R")  # find_noFPR, FPRate
+}
+
+########################################################
+# Library for evaluating model
+########################################################
+if (!Sys.getenv("DEV_LIB_EVALUATE", unset=FALSE)=="TRUE") {
+    Sys.setenv("DEV_LIB_EVALUATE"=TRUE)
+    cat("loading lib_evaluate.R...\n")
 
     #############################################
     # Area

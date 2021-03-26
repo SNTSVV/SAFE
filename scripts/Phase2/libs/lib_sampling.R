@@ -1,17 +1,21 @@
+########################################################
+# load dependencies
+########################################################
+if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
+    # fminbnd function - Brent's algorithm
+    # fminsearch function - Nelder-mead algorithm
+    #library(pracma)
+    library(neldermead)    # fminbnd by nelder-mead algorithm (Not applied)
+    source("libs/lib_model.R")
+}
+
+########################################################
 # Library for sampling from the LR model or random
 #   - required to define TASK_INFO(data.frame)
-
+########################################################
 if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
     Sys.setenv("DEV_LIB_SAMPLING"=TRUE)
     cat("loading lib_sampling.R...\n")
-    ########################################################
-    # load dependencies
-    ########################################################
-    # fminbnd function - Brent's algorithm
-    # fminsearch function - Nelder-mead algorithm
-    library(pracma)
-    # library(neldermead)    # fminbnd by nelder-mead algorithm (Not applied)
-    source("libs/lib_model.R")  #
 
     ########################################################
     #### get test data to give to predict function

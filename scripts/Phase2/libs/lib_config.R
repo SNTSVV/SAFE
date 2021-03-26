@@ -1,11 +1,16 @@
-# Library for features
+########################################################
+# load dependencies
+########################################################
+if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
+  library(stringr)
+}
+
+########################################################
+# Library for config
+########################################################
 if (!Sys.getenv("DEF_LIB_CONFIG", unset=FALSE)=="TRUE") {
   Sys.setenv("DEF_LIB_CONFIG"=TRUE)
   cat("loading lib_config.R...\n")
-  ########################################################
-  # load dependencies
-  ########################################################
-  library(stringr)
 
   ########################################################
   # configrations

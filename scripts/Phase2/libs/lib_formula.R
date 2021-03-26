@@ -1,13 +1,16 @@
-#
+########################################################
+# load dependencies
+########################################################
+if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
+    source('libs/lib_data.R')  # get_task_names
+}
+
+########################################################
+# Library for formula
+########################################################
 if (!Sys.getenv("DEV_LIB_FORMULA", unset=FALSE)=="TRUE") {
     Sys.setenv("DEV_LIB_FORMULA"=TRUE)
     cat("loading lib_formula.R...\n")
-
-    ########################################################
-    # load dependencies
-    ########################################################
-    source('libs/lib_data.R')  # get_task_names
-
 
     ########################################################
     # Generate formula with data which starts result

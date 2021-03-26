@@ -1,12 +1,16 @@
+########################################################
+# load dependencies
+########################################################
+if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
+    library(ggplot2)
+}
+
+########################################################
 # Library for features
+########################################################
 if (!Sys.getenv("DEF_LIB_FEATURES", unset=FALSE)=="TRUE") {
     Sys.setenv("DEF_LIB_FEATURES"=TRUE)
     cat("loading lib_features.R...\n")
-    ########################################################
-    # load dependencies
-    ########################################################
-    library(ggplot2)
-
 
     ###########
     # generate formula with selected terms (only linear terms)

@@ -1,11 +1,16 @@
+########################################################
+# load dependencies
+########################################################
+if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
+    library(MLmetrics)
+}
+
+########################################################
 # Library for metrics
+########################################################
 if (!Sys.getenv("DEV_LIB_METRICS", unset=FALSE)=="TRUE") {
     Sys.setenv("DEV_LIB_METRICS"=TRUE)
     cat("loading lib_metrics.R...\n")
-    ########################################################
-    # load dependencies
-    ########################################################
-    library(MLmetrics)
 
     ########################################################
     # functions

@@ -1,18 +1,22 @@
+########################################################
+# load dependencies
+########################################################
+if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
+    source("libs/lib_formula.R")  # get_raw_names, get_base_name does not need lib_data.R
+}
+
+########################################################
 # Library for logistic regression that includes
 #   - generate model function
 #   - generate points on the model
+########################################################
 if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
     Sys.setenv("DEV_LIB_MODEL"=TRUE)
     cat("loading lib_model.R...\n")
-    ########################################################
-    # load dependencies
-    ########################################################
-    source("libs/lib_formula.R")  # get_raw_names, get_base_name does not need lib_data.R
 
     #############################################
     # calculate line function
     #############################################
-
     # ************************************************
     # find index if the base is in tasks (task ID list)
     ..find_task_index<- function(base, tasks){

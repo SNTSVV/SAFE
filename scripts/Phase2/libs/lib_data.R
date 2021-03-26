@@ -1,3 +1,6 @@
+########################################################
+# Library for data
+########################################################
 if (!Sys.getenv("DEF_LIB_DATA", unset=FALSE)=="TRUE") {
     Sys.setenv("DEF_LIB_DATA"=TRUE)
     cat("loading lib_data.R...\n")

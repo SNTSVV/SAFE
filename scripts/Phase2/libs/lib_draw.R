@@ -1,17 +1,22 @@
-# Library for drawing
-if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
-    Sys.setenv("DEV_LIB_DRAW"=TRUE)
-    cat("loading lib_draw.R...\n")
-    ########################################################
-    # load dependencies
-    ########################################################
+########################################################
+# load dependencies
+########################################################
+if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
     library(scales)
     library(ggplot2)
-    source("lib_config.R")            # cbPalette
+    source("libs/lib_config.R")            # cbPalette
     source("libs/lib_data.R")         # get_task_names
     source("libs/lib_model.R")        # get_intercepts, get_bestsize_point, get_func_points
     source("libs/lib_evaluate.R")     # find_noFPR
     source("libs/lib_sampling.R")
+}
+
+########################################################
+# Library for drawing
+########################################################
+if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
+    Sys.setenv("DEV_LIB_DRAW"=TRUE)
+    cat("loading lib_draw.R...\n")
 
     ########################################################
     # drawing functions
