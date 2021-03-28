@@ -34,12 +34,6 @@ BASE_PATH <- sprintf("%s/%s", EXEC_PATH, args[1])
 phase1DirName <- ifelse(length(args)>=2, args[2], "_results")
 outputDirName <- ifelse(length(args)>=3, args[3], "_sampleView")
 
-
-cat("============== Environment ===================\n")
-cat(sprintf("EXEC_PATH  : %s\n", EXEC_PATH))
-cat(sprintf("CODE_PATH  : %s\n", CODE_PATH))
-cat(sprintf("BASE_PATH  : %s\n", BASE_PATH))
-
 ############################################################
 # SAFE Parameter parsing and setting 
 ############################################################
@@ -53,14 +47,14 @@ settings        <- parsingParameters(settingFile)
 TIME_QUANTA     <- settings[['TIME_QUANTA']]
 
 TASK_INFO <- load_taskInfo(taskinfoFile, TIME_QUANTA)
+
+cat("==============Started===================\n")
 cat(sprintf("time quanta   : %.4f\n", TIME_QUANTA))
 cat(sprintf("# of Tasks    : %d\n", nrow(TASK_INFO)))
-
+cat(sprintf("Training data : %s\n",dataFile))
 ############################################################
 # load traning data
 ############################################################
-cat("==============Started===================\n")
-print(dataFile)
 training <- read.csv(dataFile, header=TRUE)
 nMissed <- nrow(training[training$result==1,])
 nPassed <- nrow(training[training$result==0,])
@@ -72,8 +66,7 @@ cat(sprintf("Loaded training data: %d samples (nPassed: %d, nMissed: %d, Ratio o
 taskIDs <- get_task_names(training, isNum=TRUE)
 for (x in 1:(length(taskIDs)-1)){
     for (y in (x+1):length(taskIDs)){
-        g<-get_WCETspace_plot(data=training, form=NULL, xID=taskIDs[x], yID=taskIDs[y],
-                              showTraining=TRUE, showMessage=FALSE, nSamples=0, probLines=c(), showThreshold=FALSE)
+        g <- generate_WCET_scatter(training, TASK_INFO, taskIDs[x], taskIDs[y])
         ggsave(sprintf("%s/graph_T%d_T%d.pdf", OUTPUT_PATH, taskIDs[x], taskIDs[y]), g,  width=7, height=5)
         cat(sprintf("Generated WCET space with x(T%d), y(T%d)\n", taskIDs[x], taskIDs[y]))
     }

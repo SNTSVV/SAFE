@@ -21,19 +21,19 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
     ########################################################
     # drawing functions
     ########################################################
-    select_annotate_pos<-function(fx, xID, yID)
+    select_annotate_pos<-function(linePoints, xID, yID, taskInfo)
     {
-        if(TASK_INFO$WCET.MAX[[yID]]>TASK_INFO$WCET.MAX[[xID]]){
-            for(i in nrow(fx):1){
-                if (fx$x[[i]] <0) break
+        if(taskInfo$WCET.MAX[[yID]]>taskInfo$WCET.MAX[[xID]]){
+            for(i in nrow(linePoints):1){
+                if (linePoints$x[[i]] <0) break
             }
             xpos <- 0
-            ypos <- fx$y[[i]]
+            ypos <- linePoints$y[[i]]
         }else{
-            for(i in 1:nrow(fx)){
-                if (fx$y[[i]] <0) break
+            for(i in 1:nrow(linePoints)){
+                if (linePoints$y[[i]] <0) break
             }
-            xpos <- fx$x[[i]]
+            xpos <- linePoints$x[[i]]
             ypos <- 0
         }
         ret <- list()
@@ -154,7 +154,7 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
 
             # add line graph to the g
             if (nrow(fx)!=0){
-                pos <- select_annotate_pos(fx, xID, yID)
+                pos <- select_annotate_pos(fx, xID, yID, TASK_INFO)
                 g<- g +
                   geom_point(data=fx, aes(x=x, y=y), color=lineColor, alpha=0.9, size=1)+
                   annotate("text", x=pos$x, y=pos$y, label = sprintf("P=%.2f%%", prob*100), color=lineColor, size=5, hjust=-0.1, vjust=0.1)
@@ -221,14 +221,14 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
         colnames(avg_results) <- c(x_col, "Type", y_col)
 
         # change for drawing
-        maxX = max(sample_points[[x_col]])
+        maxX <- max(sample_points[[x_col]])
         print(maxX)
-        interval = as.integer(maxX/nBox)
+        interval <- as.integer(maxX/nBox)
         samples <- sample_points[(sample_points[[x_col]]%%interval==0),]
         avgs <- avg_results[(avg_results[[x_col]]%%interval==0),]
 
         if(is.null(colorList)==TRUE){
-            colorList = cbPalette
+            colorList <- cbPalette
         }
         fmt_dcimals <- function(digits=0){
             # return a function responpsible for formatting the
@@ -271,135 +271,59 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
         return (g)
     }
 
+    ..add_legend<-function(g, location="none", text_size=15){
+        if (location=="rb"){
+            g<- g+ theme(legend.justification=c(1,0), legend.position=c(0.999, 0.001),legend.text = element_text(size=text_size), legend.title=element_blank(), legend.background = element_rect(colour = "black", size=0.2))
+        }else if (location=="rt"){
+            g<- g+ theme(legend.justification=c(1,1), legend.position=c(0.999, 0.999), legend.text = element_text(size=text_size), legend.title=element_blank(), legend.background = element_rect(colour = "black", size=0.2))
+        } else if (location=="lt"){
+            g<- g+ theme(legend.justification=c(0,1), legend.position=c(0.001, 0.999), legend.text = element_text(size=text_size), legend.title=element_blank(), legend.background = element_rect(colour = "black", size=0.2))
+        } else if (location=="lb"){
+            g<- g+ theme(legend.justification=c(0,0), legend.position=c(0.001, 0.001), legend.text = element_text(size=text_size), legend.title=element_blank(), legend.background = element_rect(colour = "black", size=0.2))
+        } else{
+            g<- g+ theme(legend.position = "none")
+        }
+        return(g)
+    }
 
-    get_WCETspace_plot_with_previous<- function(
-      data, form,
-      xID, yID,
-      showTraining=TRUE,
-      nSamples=0,
-      probLines=c(),
-      showThreshold=TRUE,
-      xlabel=NULL,
-      ylabel=NULL,
-      title=NULL,
-      annotates=c(),
-      annotatesLoc=c(),
-      showMessage = TRUE,
-      showBestPoint = FALSE,
-      learnModel=TRUE
-    )
-    {
-        g <- ggplot() +
-          xlim(0, TASK_INFO$WCET.MAX[[xID]]*UNIT) +
-          ylim(0, TASK_INFO$WCET.MAX[[yID]]*UNIT) +
-          xlab(sprintf("%s (T%d)",TASK_INFO$NAME[xID], xID)) +
-          ylab(sprintf("%s (T%d)",TASK_INFO$NAME[yID], yID))
+    generate_WCET_scatter <- function(data, taskInfo, xID, yID, labelCol=NULL, legendLoc="none", model.func=NULL,
+                                      probability=NULL,
+                                      xlabel=NULL, ylabel=NULL, title=NULL, labelColor=NULL, labelShape=NULL){
 
+        #drawing
+        g <- ggplot()+
+          xlim(0, taskInfo$WCET.MAX[[xID]]) +
+          ylim(0, taskInfo$WCET.MAX[[yID]]) +
+          xlab(sprintf("T%d WCET", xID)) +
+          ylab(sprintf("T%d WCET", yID)) +
+          theme_bw() +
+          theme(axis.text=element_text(size=15), axis.title=element_text(size=15))
+
+        g <- ..add_legend(g, legendLoc, text_size=18)
         if(is.null(xlabel)==FALSE) g <- g + xlab(xlabel)
         if(is.null(ylabel)==FALSE) g <- g + ylab(ylabel)
         if (is.null(title)==FALSE) g <- g + ggtitle(title)
 
-        uData<-update_data(data, c("Positive", "Negative"))
-        nCnt <- nrow(uData)
-        previous <- uData[1:(nCnt-nSamples),]
-        newSamples <- uData[(nCnt-nSamples+1):nCnt,]
-
-        if (showTraining==TRUE){
-            g <- g +
-              geom_point( data=previous, aes(x=uData[[sprintf("T%d",xID)]], y=uData[[sprintf("T%d",yID)]]), color='gray', size=0.3, alpha=0.5)+
-              geom_point( data=newSamples, aes(x=uData[[sprintf("T%d",xID)]], y=uData[[sprintf("T%d",yID)]], color=as.factor(labels)),  size=0.3, alpha=0.5)+
-              scale_colour_manual(values=cbPalette )+
-              theme(legend.justification=c(1,1), legend.position=c(1, 1), legend.title=element_blank(), plot.title=element_text(hjust = 0.5))
+        if (is.null(labelCol)){
+            g <- g + geom_point(data=data, aes(x=data[[sprintf("T%d", xID)]], y=data[[sprintf("T%d", yID)]]))
+        }else{
+            g <- g + geom_point(data=data, aes(color=as.factor(data[[labelCol]]),
+                                               shape=as.factor(data[[labelCol]]),
+                                               x=data[[sprintf("T%d", xID)]],
+                                               y=data[[sprintf("T%d", yID)]]), size=1, alpha=1)
         }
+        if (is.null(labelColor)==FALSE){ g <- g+ scale_colour_manual(values=labelColor) }
+        if (is.null(labelShape)==FALSE){ g <- g+ scale_shape_manual(values=labelShape) }
 
-        if (learnModel==FALSE){
-            return (g)
-        }
-
-        # generate model & find threhold
-        mdx <- glm(formula = form, family = "binomial", data = uData)
-        uncertainIDs <- get_base_names(names(mdx$coefficients), isNum=TRUE)
-        threshold <- find_noFPR(mdx, uData, precise=0.0001)
-
-        # generate sample if user wants
-        if (nSamples!=0){
-            if(showMessage) cat(sprintf("\tAdding sampling points with %5.2f%% as a threhold ....\n",threshold))
-            tnames <- get_task_names(uData)
-            samples <- sample_based_euclid_distance(tnames, mdx, nSample=nSamples, nCandidate=20, P=threshold)
-            g <- g + geom_point( data=samples, aes(x=samples[[sprintf("T%d",xID)]], y=samples[[sprintf("T%d",yID)]]),  size=0.3, alpha=0.5)
-        }
-
-        # Add probability lines
-        if (showThreshold == TRUE) probLines <- c(probLines, threshold)
-        for(prob in probLines){
-            if(showMessage) cat(sprintf("\tAdding model line with %5.2f%% ....\n",prob*100))
-
-            funcLine <- generate_line_function(mdx, prob, yID, minY=0, maxY=TASK_INFO$WCET.MAX[[yID]]*UNIT)
-            fx <- get_func_points(funcLine, 0, TASK_INFO$WCET.MAX[[xID]]*UNIT, nPoints=100)
-            intercepts<-get_intercepts(mdx, prob, uncertainIDs)
-
-            # set threshold color and the others
-            lineColor <- ifelse(threshold==prob, "blue", "black")
-
-            if(TASK_INFO$WCET.MAX[[yID]]>TASK_INFO$WCET.MAX[[xID]]){
-                xpos <- intercepts[[sprintf("T%d",xID)]]
-                ypos <- 0
-                if (is.nan(xpos)==TRUE){
-                    xpos <- 0
-                    cat("\t\txpos changed to 0\n")
-                }
-            }else{
-                xpos <- 0
-                ypos <- intercepts[[sprintf("T%d",yID)]]
-                if (is.nan(ypos)==TRUE){
-                    ypos <- 0
-                    cat("\t\typos changed to 0\n")
-                }
-            }
-            if (nrow(fx)!=0){
-                g<- g +
-                  # stat_function(fun=funcLine, color="red", alpha=0.9, linetype="dashed")+
-                  geom_line(data=fx, aes(x=x, y=y), color=lineColor, alpha=0.9, linetype="dashed")+
-                  annotate("text", x = xpos, y = ypos, label = sprintf("P=%.2f%%", prob*100), color=lineColor, size=3, hjust=0, vjust=0.1)
-            } else {
-                cat(sprintf("\tCannot draw a line with %.2f%% in specified area\n", prob*100))
+        # add function line
+        if (is.null(model.func)==FALSE){
+            mline <- get_func_points(model.func, taskInfo$WCET.MIN[[xID]], taskInfo$WCET.MAX[[xID]], nPoints=300)
+            g <- g + geom_point(data=mline, aes(x=x, y=y), color='blue', alpha=0.9, size=0.1)
+            if (is.null(probability)==FALSE){
+                pos <- select_annotate_pos(mline, xID, yID, taskInfo)
+                g<- g + annotate("text", x=pos$x, y=pos$y, label = sprintf("P=%.2f%%", probability*100), color='blue', size=5, hjust=-0.1, vjust=0.1)
             }
         }
-
-        # Add Annotates
-        for (i in 1:length(annotates)){
-            xpos = 0
-            ypos = TASK_INFO$WCET.MAX[yID]*UNIT - (i-1)*0.2
-            if (length(annotatesLoc) > i){
-                xpos = annotatesLoc[i][1]
-                ypos = annotatesLoc[i][2]
-            }
-            g <- g + annotate("text", x = xpos, y = ypos, label = annotates[i], color="blue", size=3, hjust=0, vjust=-1)
-        }
-
-        if (showBestPoint==TRUE){
-
-            bestPoint <- get_bestsize_point(mdx, threshold, targetIDs=c(xID,yID), isGeneral=TRUE)
-            bestBorder1 <- data.frame(X=c(0, bestPoint$X), Y=c(bestPoint$Y, bestPoint$Y))
-            bestBorder2 <- data.frame(X=c(bestPoint$X, bestPoint$X), Y=c(bestPoint$Y, 0))
-            bestPoint <- as.data.frame(bestPoint)
-            g <- g+
-              geom_rect( data=bestPoint, xmin=0, xmax=bestPoint$X, ymin=0, ymax=bestPoint$Y,
-                         fill="green", alpha=0.15, inherit.aes = FALSE)+
-              geom_line( data=bestBorder1, aes(x=X, y=Y),
-                         color="black", alpha=0.7, inherit.aes = FALSE, linetype="dotted")+
-              geom_line( data=bestBorder2, aes(x=X, y=Y),
-                         color="black", alpha=0.7, inherit.aes = FALSE, linetype="dotted")+
-              geom_point( mapping=aes(x=X, y=Y), data=bestPoint, color="black", alpha=0.8, size=2)+
-              geom_text( mapping=aes(x=X, y=Y, label="best-size"),
-                         data=bestPoint, color="black", alpha=0.8, size=4, hjust=-0.1,vjust=-0.2)+
-              geom_text( mapping=aes(x=0, y=Y, label=sprintf("%.3fs",bestPoint$Y)),
-                         data=bestPoint, color="black", alpha=0.8, size=3, hjust=-0.1,vjust=1.3)+
-              geom_text( mapping=aes(x=X, y=0, label=sprintf("%.3fs",bestPoint$X)),
-                         data=bestPoint, color="black", alpha=0.8, size=3, hjust=1.1,vjust=-0.3)
-        }
-
-        if(showMessage) cat("Generated graph.\n")
         return (g)
     }
 
