@@ -100,6 +100,8 @@ if (positive > negative){
     balanceProb <- find_noFNR(base_model, training, precise=MODEL_PROB_PRECISION)
     # if (balanceProb<0.999) balanceProb<-0.999
 }
+
+cat(sprintf(":: Number of training data: %d (nPositive: %d, nNegative: %d)\n", nrow(training), positive, negative))
 cat(sprintf(":: BalanceRate: %.2f, BalanceSide: %s, balanceProb: %.4f \n", balanceRate, balanceSide, balanceProb))
 
 

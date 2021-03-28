@@ -326,7 +326,26 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
 
     #************************************************
     # get intercepts from the model with P
-    get_intercepts<-function(model, Plist, IDs){
+    get_intercepts<- function(model, Plist, IDs, taskInfo){
+        intercepts <- data.frame()
+        for (P in Plist){
+            items<- c()
+            for(idx in 1:length(IDs)){
+                yID <- IDs[idx]
+                XID <- IDs[-idx]
+                fx <- generate_line_function(model, P, yID, taskInfo$WCET.MIN[yID], taskInfo$WCET.MAX[yID])
+                intercept <- fx(taskInfo$WCET.MIN[XID])
+                items <- c(items, intercept)
+            }
+            intercepts<-rbind(intercepts, t(items))
+        }
+        colnames(intercepts)<- sprintf("T%d",uncertainIDs)
+        rownames(intercepts)<- Plist
+        return (intercepts)
+    }
+
+
+    get_intercepts_old<-function(model, Plist, IDs){
 
         cof<-model$coefficients
         df<-data.frame()
@@ -335,11 +354,12 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
             nItem <- data.frame(t(rep(0, length(IDs))))
             colnames(nItem) <- sprintf("T%d",IDs)
             for (id in IDs){
-                idxInter<- 1    # intercept
+                idxInter<- 1    # constant
                 idx1<-..find_idx(cof, id, 1) # 1 dimen
                 idx2<-..find_idx(cof, id, 2) # 2 dimen
                 if(idx2!=0){
-                    value <- ..qSolver(cof[idx2], ifelse(idx1==0, 0, cof[idx1]), cof[idxInter]-log(P/(1-P)))[1]
+                    constant <- as.double(cof[idxInter])-log(P/(1-P))
+                    value <- ..qSolver(cof[idx2], ifelse(idx1==0, 0, cof[idx1]), constant)[1]
                 }
                 else{
                     value <- (log(P/(1-P))-cof[idxInter]) / cof[idx1]

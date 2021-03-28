@@ -344,7 +344,11 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
         g<-generate_WCET_scatter(uData, TASK_INFO, xID, yID, labelCol = "labels", legendLoc="rt",
                                  model.func=fx, probability = threshold,
                                  labelColor=c("#00BFC4", "#F8766D"), labelShape=c(1, 25))
-        ggsave(filename, g,  width=7, height=5)
+        if (is.null(filename)==TRUE){
+            print(g)
+        }else{
+            ggsave(filename, g,  width=7, height=5)
+        }
         return(invisible(NULL))
     }
 }

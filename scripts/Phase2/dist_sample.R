@@ -11,7 +11,7 @@ CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 #CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 
 setwd(CODE_PATH)
-library(neldermead)
+suppressMessages(library(neldermead))
 source("libs/lib_config.R")
 source("libs/lib_model.R")          # get_intercepts#
 source("libs/lib_sampling.R")       # for drawing the last graph
@@ -22,15 +22,15 @@ setwd(CODE_PATH)
 ############################################################
 args <- commandArgs()
 args <- args[-(1:5)]  # get sublist from arguments (remove unnecessary arguments)
-#args <- c("results/TOSEM/CCS", "_phase2", 10, 20, 0.0014)
+#args <- c("results/TOSEM3/ICS", "_phase2", 10, 20, 0.0036)
 if (length(args)<1){
     cat("Error:: Required parameters: target folder\n\n")
     quit(status=0)
 }
 BASE_PATH       <- sprintf("%s/%s", EXEC_PATH, args[1])
 phase2DirName   <- args[2]  # "_phase2"
-nSample         <- as.integer(args[3])
-nCandidate      <- as.integer(args[4])
+nSamples        <- as.integer(args[3])
+nCandidates     <- as.integer(args[4])
 probability     <- as.double(args[5])
 
 ############################################################
@@ -45,7 +45,6 @@ settings        <- parsingParameters(settingFile)
 TIME_QUANTA     <- settings[['TIME_QUANTA']]
 
 TASK_INFO <- load_taskInfo(taskinfoFile, TIME_QUANTA)
-cat(sprintf("# of Tasks    : %d\n", nrow(TASK_INFO)))
 
 # load model
 md.csv<-read.csv(modelFile,header=FALSE)
@@ -54,7 +53,18 @@ names(model.coef) <- md.csv[1,]
 model <- list(coefficients=model.coef)
 
 # execute sampling
-samples <- sample_based_euclid_distance(model, nSample, nCandidate, probability, isGeneral=TRUE)
+targetIDs <- get_base_names(names(model$coefficients), isNum=TRUE)
+if (length(targetIDs)>=2){
+    yID <- targetIDs[length(targetIDs)]
+    XID <- targetIDs[1:(length(targetIDs)-1)]
+}else{
+    yID <- targetIDs[length(targetIDs)]
+    XID <- c()
+}
+
+fx<-generate_line_function(model, probability, yID, TASK_INFO$WCET.MIN[yID], TASK_INFO$WCET.MAX[yID])
+xRange <- find_x_range(TASK_INFO, fx, XID, training, 0.00)
+samples <- generate_samples_by_distance(TASK_INFO, fx, yID, XID, xRange, nSamples, nCandidates)
 
 # write results
 write.table(samples, file=sampleFile,

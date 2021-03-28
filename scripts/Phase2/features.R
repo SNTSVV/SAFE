@@ -148,8 +148,24 @@ formulaPath <- sprintf("%s/formula", OUTPUT_PATH)
 write(formula_str, file=formulaPath)
 cat(sprintf("\tSaved formula into %s\n", formulaPath))
 
+
 # Draw current model
 uncertainIDs <- get_base_names(names(md2$coefficients), isNum=TRUE)
 draw_model(training, md2, TASK_INFO, uncertainIDs, modelBeforeFile)
+
+# verification
+threshold <- find_noFPR(md, training, precise=0.0001)  # lowest probability
+intercepts <- get_intercepts(md, threshold, uncertainIDs, TASK_INFO)
+if (as.double(intercepts[1,])==Inf){
+    cat("\n\nNot applicable Phase 2 with the lowest probability\n\n")
+    quit(1)
+}
+
+#threshold <- find_noFNR(md, training, precise=0.0001)  # highest probability
+#intercepts <- get_intercepts(md, threshold, uncertainIDs, TASK_INFO)
+#if (as.double(intercepts[1,])==Inf){
+#    cat("Not applicable Phase 2 with the heighest probability")
+#}
+#
 cat("Done.\n")
 
