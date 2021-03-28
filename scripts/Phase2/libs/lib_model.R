@@ -312,12 +312,12 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
     ..qSolver <- function(w1,w2,c){
         dt<- ..delta(w1,w2,c)
         if(dt > 0){ # first case D>0
-            x_1 = (-w2+sqrt(dt))/(2*w1)
-            x_2 = (-w2-sqrt(dt))/(2*w1)
-            result = c(x_1,x_2)
+            x_1 <- (-w2+sqrt(dt))/(2*w1)
+            x_2 <- (-w2-sqrt(dt))/(2*w1)
+            result <- c(x_1,x_2)
         }
         else if(dt == 0){ # second case D=0
-            result = -w2/(2*w1)
+            result <- -w2/(2*w1)
         }
         else {NaN} # third case D<0  "There are no real roots."
         #     result = -w2/(2*w1)
@@ -339,10 +339,10 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
                 idx1<-..find_idx(cof, id, 1) # 1 dimen
                 idx2<-..find_idx(cof, id, 2) # 2 dimen
                 if(idx2!=0){
-                    value=..qSolver(cof[idx2], ifelse(idx1==0, 0, cof[idx1]), cof[idxInter]-log(P/(1-P)))[1]
+                    value <- ..qSolver(cof[idx2], ifelse(idx1==0, 0, cof[idx1]), cof[idxInter]-log(P/(1-P)))[1]
                 }
                 else{
-                    value=(log(P/(1-P))-cof[idxInter]) / cof[idx1]
+                    value <- (log(P/(1-P))-cof[idxInter]) / cof[idx1]
                 }
                 nItem[sprintf("T%d",id)] <- value
             }
@@ -356,11 +356,11 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
     # complement intercepts: if there is nan or over the initial bound, we set initial bound
     complement_intercepts <- function(intercepts, uncertainIDs, task_info){
         for(tID in uncertainIDs){
-            tname = sprintf("T%d",tID)
+            tname <- sprintf("T%d",tID)
             if (is.nan(intercepts[1,tname])==TRUE){
-                intercepts[tname] = task_info$WCET.MAX[[tID]]
+                intercepts[tname] <- task_info$WCET.MAX[[tID]]
             } else{
-                intercepts[tname] = min(ceiling(intercepts[[tname]]), task_info$WCET.MAX[[tID]])
+                intercepts[tname] <- min(ceiling(intercepts[[tname]]), task_info$WCET.MAX[[tID]])
             }
         }
         return (intercepts)

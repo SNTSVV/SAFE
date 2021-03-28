@@ -327,4 +327,24 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
         return (g)
     }
 
+    draw_model <- function(data, model, taskInfo, taskIDs, filename){
+        if (!(length(taskIDs)==2 || length(taskIDs)==1)) return(invisible(NULL))
+        if (length(taskIDs)==2){
+            yID <- taskIDs[length(taskIDs)]
+            xID <- taskIDs[-length(taskIDs)]
+        } else{
+            yID <- taskIDs[length(taskIDs)]
+            allIDs <- get_task_names(data, isNum=TRUE)
+            allIDs <- allIDs[-yID]
+            xID <- allIDs[1]
+        }
+        uData<-update_data(data, c("No deadline miss", "Deadline miss"))
+        threshold <- find_noFPR(model, uData, precise=0.0001)
+        fx<-generate_line_function(model, threshold, yID, taskInfo$WCET.MIN[yID], taskInfo$WCET.MAX[yID])
+        g<-generate_WCET_scatter(uData, TASK_INFO, xID, yID, labelCol = "labels", legendLoc="rt",
+                                 model.func=fx, probability = threshold,
+                                 labelColor=c("#00BFC4", "#F8766D"), labelShape=c(1, 25))
+        ggsave(filename, g,  width=7, height=5)
+        return(invisible(NULL))
+    }
 }

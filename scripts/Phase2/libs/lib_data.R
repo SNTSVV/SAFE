@@ -47,7 +47,7 @@ if (!Sys.getenv("DEF_LIB_DATA", unset=FALSE)=="TRUE") {
         names <- colnames(data)
         for (colname in names){
             if (startsWith(colname, "T") == FALSE) next
-            data[[colname]] <- data[[colname]]*UNIT
+            data[[colname]] <- data[[colname]]
         }
         #Add label for result
         if (!is.null(labels)){

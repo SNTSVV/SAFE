@@ -12,50 +12,6 @@ if (!Sys.getenv("DEF_LIB_FEATURES", unset=FALSE)=="TRUE") {
     Sys.setenv("DEF_LIB_FEATURES"=TRUE)
     cat("loading lib_features.R...\n")
 
-    ###########
-    # generate formula with selected terms (only linear terms)
-    ###########
-    get_formula_linear<- function(y, terms){
-        formula<- ""
-        # Add linear terms
-        for (term in terms){
-            if (formula == "")
-              formula <- sprintf("%s ~ %s",y, term)
-            else
-              formula <- sprintf("%s + %s",formula, term)
-        }
-        return (formula)
-    }
-
-
-    ###########
-    # generate formula with selected terms (including quadratic and interaction)
-    ###########
-    get_formula_complex<- function(y, terms){
-        formula<- ""
-        # Add linear terms
-        for (term in terms){
-            if (formula == "")
-              formula <- sprintf("%s ~ %s",y, term)
-            else
-              formula <- sprintf("%s + %s",formula, term, term)
-        }
-        # Add quadratic terms
-        if (length(terms)>1){
-            for (term in terms){formula <- sprintf("%s + I(%s^2)",formula, term)}
-        }
-        # Add interaction terms
-        if (length(terms) > 1){
-            for(x1 in 1:(length(terms)-1)){
-                for(x2 in (x1+1):length(terms)){
-                    formula <- sprintf("%s + %s:%s",formula, terms[x1], terms[x2])
-                }
-            }
-        }
-        return (formula)
-    }
-
-
     ############################################################
     # Checking importance through Random Forest
     #   - removing terms in a priori is not good way, but if we have big dimension of data set, we can apply them

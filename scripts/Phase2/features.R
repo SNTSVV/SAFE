@@ -12,6 +12,8 @@ CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 setwd(CODE_PATH)
 source("libs/lib_config.R")
 source("libs/lib_features.R")
+source("libs/lib_formula.R")
+source("libs/lib_draw.R")
 suppressMessages(library(MASS))    # stepAIC
 suppressMessages(library(dplyr))   # ??
 suppressMessages(library(randomForest))
@@ -23,7 +25,6 @@ suppressMessages(setwd(CODE_PATH))
 ############################################################
 args <- commandArgs()
 args <- args[-(1:5)]  # get sublist from arguments (remove unnecessary arguments)
-#args <- c("results/TOSEM/ICS")
 if (length(args)<1){
     cat("Error:: Required parameters: target folder\n\n")
     quit(status=0)
@@ -48,6 +49,7 @@ cat(sprintf("OUTPUT_PATH: %s\n", OUTPUT_PATH))
 settingFile   <- sprintf("%s/settings.txt", BASE_PATH)
 taskinfoFile  <- sprintf("%s/input.csv", BASE_PATH)
 dataFile      <- sprintf('%s/%s/sampledata.csv', BASE_PATH, phase1DirName)
+modelBeforeFile<- sprintf('%s/%s/model_graph_before.pdf', BASE_PATH, outputDirName)
 
 settings        <- parsingParameters(settingFile)
 nSamples        <- settings[["N_SAMPLE_WCET"]]
@@ -66,11 +68,11 @@ cat(sprintf("# of Tasks    : %d\n", nrow(TASK_INFO)))
 # load traning data
 ############################################################
 cat("==============Started===================\n")
-print(dataFile)
+cat(sprintf("Training Data : %s",dataFile))
 training <- read.csv(dataFile, header=TRUE)
 #nPoints <- (iterations.P1+populationSize) * nSamples # (iteration + population ) nSample
 #training <- training[1:nPoints,]
-print(sprintf("Loaded data file (nTraining: %d)", nrow(training)))
+cat(sprintf("Loaded data file (nTraining: %d)\n", nrow(training)))
 
 # check data validity
 nMissed <- nrow(training[training$result==1,])
@@ -145,4 +147,9 @@ cat(sprintf("\t Reduced formula: %s\n",formula_str))
 formulaPath <- sprintf("%s/formula", OUTPUT_PATH)
 write(formula_str, file=formulaPath)
 cat(sprintf("\tSaved formula into %s\n", formulaPath))
+
+# Draw current model
+uncertainIDs <- get_base_names(names(md2$coefficients), isNum=TRUE)
+draw_model(training, md2, TASK_INFO, uncertainIDs, modelBeforeFile)
 cat("Done.\n")
+

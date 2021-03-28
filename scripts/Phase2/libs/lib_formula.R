@@ -151,7 +151,9 @@ if (!Sys.getenv("DEV_LIB_FORMULA", unset=FALSE)=="TRUE") {
                 formula <- sprintf("%s + %s",formula, term, term)
         }
         # Add quadratic terms
-        for (term in terms){formula <- sprintf("%s + I(%s^2)",formula, term)}
+        if (length(terms)>1){
+            for (term in terms){formula <- sprintf("%s + I(%s^2)",formula, term)}
+        }
         # Add interaction terms
         if (length(terms) > 1){
             for(x1 in 1:(length(terms)-1)){

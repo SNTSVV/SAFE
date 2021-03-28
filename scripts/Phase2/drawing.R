@@ -64,9 +64,14 @@ cat(sprintf("Loaded training data: %d samples (nPassed: %d, nMissed: %d, Ratio o
 ################################################################################
 # printing model into file
 taskIDs <- get_task_names(training, isNum=TRUE)
+training <- update_data(training, c("No deadline miss", "Deadline miss"))
 for (x in 1:(length(taskIDs)-1)){
     for (y in (x+1):length(taskIDs)){
-        g <- generate_WCET_scatter(training, TASK_INFO, taskIDs[x], taskIDs[y])
+        #g <- generate_WCET_scatter(training, TASK_INFO, taskIDs[x], taskIDs[y], labelCol="labels")
+        g<-generate_WCET_scatter(training, TASK_INFO, taskIDs[x], taskIDs[y],
+                                 labelCol = "labels", legendLoc="rt",
+                                 labelColor=c("#00BFC4", "#F8766D"), labelShape=c(1, 25))
+
         ggsave(sprintf("%s/graph_T%d_T%d.pdf", OUTPUT_PATH, taskIDs[x], taskIDs[y]), g,  width=7, height=5)
         cat(sprintf("Generated WCET space with x(T%d), y(T%d)\n", taskIDs[x], taskIDs[y]))
     }

@@ -9,12 +9,13 @@ options(warn=-1)
 EXEC_PATH <- getwd()
 CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 #EXEC_PATH <- "~/projects/RTA_SAFE"
-#args <- ("results/SAFE_CCS")
+#CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
+#args <- c("results/TOSEM3/ICS", "_results", "_formula", "print")
 
 setwd(CODE_PATH)
-library(MASS)
-library(dplyr)
-library(MLmetrics)
+suppressMessages(library(MASS))
+suppressMessages(library(dplyr))
+suppressMessages(library(MLmetrics))
 source("libs/lib_config.R")
 source("libs/lib_data.R")       # get_task_names
 source("libs/lib_model.R")      # get_intercepts#
@@ -30,16 +31,13 @@ setwd(CODE_PATH)
 ############################################################
 args <- commandArgs()
 args <- args[-(1:5)]  # get sublist from arguments (remove unnecessary arguments)
-#args <- ("results/SAFE_CCS")
 if (length(args)<1){
     cat("Error:: Required parameters: target folder\n\n")
     quit(status=0)
 }
-print(args)
 BASE_PATH      <- sprintf("%s/%s", EXEC_PATH, args[1])
 phase1DirName  <- ifelse(length(args)>=2, args[2], "_results")
 formulaDirName <- ifelse(length(args)>=3, args[3], "_formula")
-printModel     <- ifelse((length(args)>=4 & args[4]=="print"), TRUE, FALSE)
 FORMULA_PATH   <- sprintf("%s/%s", BASE_PATH, formulaDirName)
 
 if(dir.exists(FORMULA_PATH)==FALSE){
@@ -47,11 +45,10 @@ if(dir.exists(FORMULA_PATH)==FALSE){
 }
 
 cat("============== Environment ===================\n")
-cat(sprintf("EXEC_PATH  : %s\n", EXEC_PATH))
-cat(sprintf("CODE_PATH  : %s\n", CODE_PATH))
-cat(sprintf("BASE_PATH  : %s\n", BASE_PATH))
-cat(sprintf("FORMULA_PATH: %s\n", FORMULA_PATH))
-cat(sprintf("printModel: %s\n", printModel))
+cat(sprintf("EXEC_PATH     : %s\n", EXEC_PATH))
+cat(sprintf("CODE_PATH     : %s\n", CODE_PATH))
+cat(sprintf("BASE_PATH     : %s\n", BASE_PATH))
+cat(sprintf("FORMULA_PATH  : %s\n", FORMULA_PATH))
 
 
 ############################################################
@@ -63,7 +60,6 @@ newTaskFile   <- sprintf("%s/input_reduced.csv", BASE_PATH)
 dataFile      <- sprintf('%s/%s/sampledata.csv', BASE_PATH, phase1DirName)
 newTrainingFile <- sprintf('%s/%s/sampledata_reduced.csv', BASE_PATH, phase1DirName)
 formulaFile   <- sprintf('%s/%s/formula', BASE_PATH, formulaDirName)
-modelBeforeFile<- sprintf('%s/%s/model_graph_before.pdf', BASE_PATH, formulaDirName)
 modelAfterFile<- sprintf('%s/%s/model_graph_after.pdf', BASE_PATH, formulaDirName)
 
 params<- parsingParameters(settingFile)
@@ -110,45 +106,39 @@ cat(sprintf(":: BalanceRate: %.2f, BalanceSide: %s, balanceProb: %.4f \n", balan
 uncertainIDs <- get_base_names(names(base_model$coefficients), isNum=TRUE)
 
 ################################################################################
-# printing model into file
-if (printModel && length(uncertainIDs)==2){
-    cat(":: Print model before...\n")
-    g<-get_WCETspace_plot(data=training, form=model.formula, xID=uncertainIDs[2], yID=uncertainIDs[1],
-                          showTraining=TRUE, nSamples=0, probLines=c(), showThreshold=TRUE)
-    ggsave(modelBeforeFile, g,  width=7, height=5)
-}
-
-################################################################################
 # pruning
-if(balanceRate<0.99){
+if(balanceSide=="negative" && balanceRate<0.50){
     cat(":: Pruning... ")
+    taskInfo <- data.frame(TASK_INFO)
     df<-list()
     for(tID in uncertainIDs){
-        df[sprintf("T%d",tID)] <- TASK_INFO$WCET.MAX[[tID]]
+        df[sprintf("T%d",tID)] <- taskInfo$WCET.MAX[[tID]]
     }
     intercepts <- as.data.frame(df)  # ??
     intercepts <- get_intercepts(base_model, balanceProb, uncertainIDs)
-    intercepts <- complement_intercepts(intercepts, uncertainIDs, TASK_INFO)
+    intercepts <- complement_intercepts(intercepts, uncertainIDs, taskInfo)
+
+
     #print(intercepts)
     training <- pruning(training, balanceSide, intercepts, uncertainIDs)
 
     # change input data
     for (tID in uncertainIDs){
         tname <- sprintf("T%d", tID)
-        TASK_INFO$WCET.MAX[[tID]] <- intercepts[1, tname]
+        taskInfo$WCET.MAX[[tID]] <- intercepts[1, tname]
         # print(sprintf("T%d=%d", tID, TASK_INFO$WCET.MAX[[tID]]))
     }
 
     ################################################################################
     # Save the new tasks
-    taskinfo <- TASK_INFO
-    taskinfo$WCET.MIN <- taskinfo$WCET.MIN*TIME_QUANTA
-    taskinfo$WCET.MAX <- taskinfo$WCET.MAX*TIME_QUANTA
-    taskinfo$PERIOD   <- taskinfo$PERIOD*TIME_QUANTA
-    taskinfo$INTER.MIN <- taskinfo$INTER.MIN*TIME_QUANTA
-    taskinfo$INTER.MAX <- taskinfo$INTER.MAX*TIME_QUANTA
-    taskinfo$DEADLINE  <- taskinfo$DEADLINE*TIME_QUANTA
-    write.table(taskinfo, newTaskFile, append = FALSE, sep = ",", dec = ".",row.names = FALSE, col.names = TRUE)
+    copy <- data.frame(taskInfo)
+    copy$WCET.MIN <- copy$WCET.MIN*TIME_QUANTA
+    copy$WCET.MAX <- copy$WCET.MAX*TIME_QUANTA
+    copy$PERIOD   <- copy$PERIOD*TIME_QUANTA
+    copy$INTER.MIN <- copy$INTER.MIN*TIME_QUANTA
+    copy$INTER.MAX <- copy$INTER.MAX*TIME_QUANTA
+    copy$DEADLINE  <- copy$DEADLINE*TIME_QUANTA
+    write.table(copy, newTaskFile, append = FALSE, sep = ",", dec = ".",row.names = FALSE, col.names = TRUE)
 
     # Save traning data
     write.table(training, newTrainingFile, append = FALSE, sep = ",", dec = ".",row.names = FALSE, col.names = TRUE)
@@ -159,12 +149,8 @@ if(balanceRate<0.99){
 
 ################################################################################
 # printing model into file
-if (printModel && length(uncertainIDs)==2){
-    cat(":: Print model after...\n")
-    g<-get_WCETspace_plot(data=training, form=model.formula, xID=uncertainIDs[2], yID=uncertainIDs[1],
-                          showTraining=TRUE, nSamples=0, probLines=c(), showThreshold=TRUE)
-    ggsave(modelAfterFile, g,  width=7, height=5)
-}
+draw_model(training, base_model, TASK_INFO, uncertainIDs, modelAfterFile)
+
 cat("Done.\n")
 
 
