@@ -2,7 +2,7 @@
 # load dependencies
 ########################################################
 if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
-    library(MLmetrics)
+    suppressMessages(library(MLmetrics))
 }
 
 ########################################################

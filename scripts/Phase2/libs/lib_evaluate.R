@@ -2,7 +2,7 @@
 # load dependencies
 ########################################################
 if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
-    library(cubature)
+    suppressMessages(library(cubature))
     source("libs/lib_data.R")     # get_task_names
     source("libs/lib_metrics.R")  # find_noFPR, FPRate
 }

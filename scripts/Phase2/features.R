@@ -7,22 +7,23 @@ options(warn=-1)
 EXEC_PATH <- getwd()
 CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 #EXEC_PATH <- "~/projects/RTA_SAFE"
-#args <- ("results/SAFE_GASearch")
+#CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 
 setwd(CODE_PATH)
 source("libs/lib_config.R")
 source("libs/lib_features.R")
-library(MASS)    # stepAIC
-library(dplyr)   # ??
-library(randomForest)
-library(ggplot2)
-setwd(CODE_PATH)
+suppressMessages(library(MASS))    # stepAIC
+suppressMessages(library(dplyr))   # ??
+suppressMessages(library(randomForest))
+suppressMessages(library(ggplot2))
+suppressMessages(setwd(CODE_PATH))
 
 ############################################################
 # R Parameter passing
 ############################################################
 args <- commandArgs()
 args <- args[-(1:5)]  # get sublist from arguments (remove unnecessary arguments)
+#args <- c("results/TOSEM/ICS")
 if (length(args)<1){
     cat("Error:: Required parameters: target folder\n\n")
     quit(status=0)

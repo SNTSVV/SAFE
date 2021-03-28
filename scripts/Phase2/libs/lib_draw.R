@@ -2,8 +2,8 @@
 # load dependencies
 ########################################################
 if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
-    library(scales)
-    library(ggplot2)
+    suppressMessages(library(scales))
+    suppressMessages(library(ggplot2))
     source("libs/lib_config.R")            # cbPalette
     source("libs/lib_data.R")         # get_task_names
     source("libs/lib_model.R")        # get_intercepts, get_bestsize_point, get_func_points

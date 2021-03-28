@@ -4,27 +4,27 @@ options(warn=-1)
 ############################################################
 # Load libraries
 ############################################################
-#EXEC_PATH <- getwd()
-#CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
-EXEC_PATH <- '~/projects/RTA_SAFE'
+EXEC_PATH <- getwd()
 CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
-args <- c("", "", "", "", "", "results/TOSEM2/ICS")
+#EXEC_PATH <- '~/projects/RTA_SAFE'
+#CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
+#args <- c("", "", "", "", "", "results/TOSEM2/ICS")
 
 setwd(CODE_PATH)
 source("libs/lib_config.R")
 source("libs/lib_data.R")
 source("libs/lib_features.R")
 source("libs/lib_draw.R")
-library(MASS)    # stepAIC
-library(dplyr)   # ??
-library(randomForest)
-library(ggplot2)
+suppressMessages(library(MASS))    # stepAIC
+suppressMessages(library(dplyr) )  # ??
+suppressMessages(library(randomForest))
+suppressMessages(library(ggplot2))
 setwd(CODE_PATH)
 
 ############################################################
 # R Parameter passing
 ############################################################
-#args <- commandArgs()
+args <- commandArgs()
 args <- args[-(1:5)]  # get sublist from arguments (remove unnecessary arguments)
 if (length(args)<1){
     cat("Error:: Required parameters: target folder\n\n")

@@ -2,7 +2,7 @@
 # load dependencies
 ########################################################
 if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
-  library(stringr)
+  suppressMessages(library(stringr))
 }
 
 ########################################################
