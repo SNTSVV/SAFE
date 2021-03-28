@@ -21,6 +21,7 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
     # find index if the base is in tasks (task ID list)
     ..find_task_index<- function(base, tasks){
         ret <- 0
+        if (length(tasks)==0) return (0)
         for (i in 1:length(tasks)){
             if (tasks[[i]]==base) {
                 ret <- i
@@ -35,21 +36,21 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
     #   - if term is interection term, we will return a list of two vectors
     ..get_term_info <- function(term){
         base <- c()
-        poly <- c()
+        exponent <- c()
         tnames <- strsplit(term, ":")[[1]]
         for(tname in tnames){
             if (startsWith(tname, "I(") == TRUE) {
                 base <- c(base, as.integer(substring(tname, 4, nchar(tname)-3)) )
-                poly <- c(poly, as.integer(substring(tname, nchar(tname)-1, nchar(tname)-1)) )
+                exponent <- c(exponent, as.integer(substring(tname, nchar(tname)-1, nchar(tname)-1)) )
             } else if (startsWith(tname, "T") == TRUE) {
                 base <- c(base, as.integer(substring(tname, 2)) )
-                poly <- c(poly, 1)
+                exponent <- c(exponent, 1)
             } else{
                 base<- c(base, 0)
-                poly<- c(poly, 0)
+                exponent<- c(exponent, 0)
             }
         }
-        return (list("base"=base, "poly"=poly))
+        return (list("base"=base, "exponent"=exponent))
     }
 
     # ************************************************
@@ -57,13 +58,10 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
     #   - poly, index, target (poly for target task)
     #   -
     ..parsing_coef <- function(coef, TaskIDs, targetID){
-        # coef<-model$coefficients
-        # targetID<-33
-
         # group variables
-        poly<- c()  # poly for the non-target tasks (0, 1, 2)
+        exponent<- c()  # exponent for the non-target tasks (0, 1, 2)
         index<-c()  # taskIDs Mapped index
-        target<-c()  # poly for target task (0, 1, 2)
+        target<-c()  # exponent for target task (0, 1, 2)
 
         # grouping for each polynomial
         terms<-names(coef)
@@ -72,31 +70,31 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
             term <- terms[idx]
             info <-..get_term_info(term)
             # info
-            if (length(info$poly)==2) {
+            if (length(info$exponent)==2) {
                 # interaction
                 tIdx <- ifelse(info$base[[1]]==targetID, 1, 2)
                 oIdx <- ifelse(info$base[[1]]==targetID, 2, 1)
 
-                target <- c(target, info$poly[[tIdx]])
+                target <- c(target, info$exponent[[tIdx]])
                 index <- c(index, ..find_task_index(info$base[[oIdx]], TaskIDs))
-                poly <- c(poly, info$poly[[oIdx]])
+                exponent <- c(exponent, info$exponent[[oIdx]])
             }else {
                 # single
                 if(info$base==targetID){  # if target task...
-                    target <- c(target, info$poly)
+                    target <- c(target, info$exponent)
                     index <- c(index, 0)
-                    poly <- c(poly, 0)
+                    exponent <- c(exponent, 0)
                 } else {
                     target <- c(target, 0)
                     index <- c(index, ..find_task_index(info$base, TaskIDs))
-                    poly <- c(poly, info$poly)
+                    exponent <- c(exponent, info$exponent)
                 }
             }
         }
         # data.frame("name"=names(coef)[1:length(poly)],"coef"=as.double(coef)[1:length(poly)], "poly"=poly,"index"=index,"target"=target)
         info <- data.frame(
             "coef"=as.double(coef),
-            "poly"=poly,
+            "exponent"=exponent,
             "index"=index,
             "target"=target
         )
@@ -159,12 +157,17 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
                 c<-0
                 for(i in 1:nrow(info)){
                     base <- ifelse(info$index[i]!=0, X[info$index[i]], 1)
-                    value <- (info$coef[i]*base^info$poly[i])
+                    value <- (info$coef[i]*base^info$exponent[i])
                     if (info$target[i]==1) b <- b + value
                     if (info$target[i]==0) c <- c + value
                 }
                 c <- c - log(P/(1-P))
-                return (c/-b)
+                ret<-(c/-b)
+                if (minY <= ret && ret<=maxY){
+                    return (ret)
+                }
+                return (Inf)
+                #return (c/-b)
             }
         }else{
             # 2nd order (use sqrt )
@@ -176,7 +179,7 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
                 # Separate each term by terms (quadratic, linear, constant)
                 for(i in 1:nrow(info)){
                     base <- ifelse(info$index[i]!=0, X[info$index[i]], 1)
-                    value <- (info$coef[i]*base^info$poly[i])
+                    value <- (info$coef[i]*base^info$exponent[i])
 
                     if (info$target[i]==2) a <- a + value
                     if (info$target[i]==1) b <- b + value
