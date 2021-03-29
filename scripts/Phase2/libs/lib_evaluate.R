@@ -86,10 +86,10 @@ if (!Sys.getenv("DEV_LIB_EVALUATE", unset=FALSE)=="TRUE") {
         return(v$integral)
     }
 
-    integrateMC <- function(n,model,IDs, prob, UNIT.WCET=1, upper=NULL, lower=NULL, graph.on=FALSE){
+    integrateMC <- function(taskInfo, n,model,IDs, prob, upper=NULL, lower=NULL, graph.on=FALSE){
         # calculate range
-        if(is.null(lower)) minLimit<-TASK_INFO$WCET.MIN[IDs]*UNIT.WCET else minLimit<-lower
-        if(is.null(upper)) maxLimit<-as.numeric(get_intercepts(model, prob, IDs)) else maxLimit<-upper
+        if(is.null(lower)) minLimit<-taskInfo$WCET.MIN[IDs] else minLimit<-lower
+        if(is.null(upper)) maxLimit<-as.numeric(get_intercepts(model, prob, IDs, taskInfo)) else maxLimit<-upper
 
         # sampling for integral each IDs
         examples<-data.frame()
@@ -121,8 +121,8 @@ if (!Sys.getenv("DEV_LIB_EVALUATE", unset=FALSE)=="TRUE") {
                 theme(legend.justification=c(0,1), legend.position=c(0, 1), legend.title=element_blank(), plot.title=element_text(hjust = 0.5))+
                 xlim(minLimit[2], maxLimit[2]) +
                 ylim(minLimit[1], maxLimit[1]) +
-                xlab(sprintf("%s (T%d)",TASK_INFO$NAME[IDs[2]], IDs[2])) +
-                ylab(sprintf("%s (T%d)",TASK_INFO$NAME[IDs[1]], IDs[1])) +
+                xlab(sprintf("%s (T%d)",taskInfo$NAME[IDs[2]], IDs[2])) +
+                ylab(sprintf("%s (T%d)",taskInfo$NAME[IDs[1]], IDs[1])) +
                 ggtitle(sprintf("Area of function (N=%d, Integral=%.4f)", n, mc*fullArea))
             ret[["graph"]]<-g
         }

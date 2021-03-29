@@ -256,6 +256,10 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
 
         by <- (maxX - minX) / nPoints   # delta between points
         points <- ..gen_points(by)
+        if (nrow(points)==0){
+            cat(sprintf("Cannot generate model value within the range [%d, %d]", minX, maxX))
+            return (NULL)
+        }
         points <- points[order(points$y),]   # sort by y
         rough <- ..find_rough_point(points)
         maxrange <- max(points$y) - min(points$y)
@@ -428,7 +432,7 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
     # find maximum area by a point on the model function
     # This functions for the specific formula
     #############################################
-    get_bestsize_point<-function(model, P, targetIDs, isGeneral=TRUE, modelUNIT=1){
+    get_bestsize_point<-function(taskInfo, model, P, targetIDs, isGeneral=TRUE){
 
         # generate IDs
         answerID <- targetIDs[length(targetIDs)]
@@ -436,9 +440,9 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
 
         # find minimum index
         if (isGeneral==TRUE){
-            fx<-generate_line_function(model, P, answerID, TASK_INFO$WCET.MIN[answerID]*modelUNIT, TASK_INFO$WCET.MAX[answerID]*modelUNIT)
+            fx<-generate_line_function(model, P, answerID, taskInfo$WCET.MIN[answerID], taskInfo$WCET.MAX[answerID])
         } else{
-            fx<-get_model_func_quadratic(model, P, TASK_INFO$WCET.MIN[answerID]*modelUNIT, TASK_INFO$WCET.MAX[answerID]*modelUNIT)
+            fx<-get_model_func_quadratic(model, P, taskInfo$WCET.MIN[answerID], TASK_INFO$WCET.MAX[answerID])
         }
 
         area_func<-function(X){
@@ -452,8 +456,8 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
         }
         # find minimum distance in range (WCET.MIN, WCET.MAX)
         xID <- pointsIDs[1]
-        intercepts<-get_intercepts(model, P, targetIDs)
-        v<-fminbnd(area_func, TASK_INFO$WCET.MIN[[xID]]*modelUNIT, intercepts[[sprintf("T%d",xID)]], maximum=TRUE)
+        intercepts<-get_intercepts(model, P, targetIDs, taskInfo)
+        v<-fminbnd(area_func, taskInfo$WCET.MIN[[xID]], intercepts[[sprintf("T%d",xID)]], maximum=TRUE)
         # print(sprintf("xmin=%.4f, fmin=%.4f, niter=%d, estim.prec=%e", v$xmin, v$fmin, v$niter, v$estim.prec))
         ymax <- fx(v$xmin)
         area <- ymax * v$xmin

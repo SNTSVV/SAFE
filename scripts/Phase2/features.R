@@ -70,10 +70,6 @@ cat(sprintf("# of Tasks    : %d\n", nrow(TASK_INFO)))
 cat("==============Started===================\n")
 cat(sprintf("Training Data : %s",dataFile))
 training <- read.csv(dataFile, header=TRUE)
-#nPoints <- (iterations.P1+populationSize) * nSamples # (iteration + population ) nSample
-#training <- training[1:nPoints,]
-cat(sprintf("Loaded data file (nTraining: %d)\n", nrow(training)))
-
 # check data validity
 nMissed <- nrow(training[training$result==1,])
 nPassed <- nrow(training[training$result==0,])

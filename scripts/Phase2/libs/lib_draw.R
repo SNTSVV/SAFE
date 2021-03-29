@@ -318,10 +318,12 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
         # add function line
         if (is.null(model.func)==FALSE){
             mline <- get_func_points(model.func, taskInfo$WCET.MIN[[xID]], taskInfo$WCET.MAX[[xID]], nPoints=300)
-            g <- g + geom_point(data=mline, aes(x=x, y=y), color='blue', alpha=0.9, size=0.1)
-            if (is.null(probability)==FALSE){
-                pos <- select_annotate_pos(mline, xID, yID, taskInfo)
-                g<- g + annotate("text", x=pos$x, y=pos$y, label = sprintf("P=%.2f%%", probability*100), color='blue', size=5, hjust=-0.1, vjust=0.1)
+            if (is.null(mline)==FALSE){
+                g <- g + geom_point(data=mline, aes(x=x, y=y), color='blue', alpha=0.9, size=0.1)
+                if (is.null(probability)==FALSE){
+                    pos <- select_annotate_pos(mline, xID, yID, taskInfo)
+                    g<- g + annotate("text", x=pos$x, y=pos$y, label = sprintf("P=%.2f%%", probability*100), color='blue', size=5, hjust=-0.1, vjust=0.1)
+                }
             }
         }
         return (g)
