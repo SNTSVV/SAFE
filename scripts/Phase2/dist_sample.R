@@ -37,9 +37,12 @@ probability     <- as.double(args[5])
 # SAFE Parameter parsing and setting
 ############################################################
 settingFile   <- sprintf("%s/settings.txt", BASE_PATH)
-taskinfoFile  <- sprintf("%s/input.csv", BASE_PATH)
-modelFile   <- sprintf("%s/%s/samples.md", BASE_PATH, phase2DirName)
-sampleFile   <- sprintf("%s/%s/samples.data", BASE_PATH,phase2DirName)
+taskinfoFile  <- sprintf("%s/input_reduced.csv", BASE_PATH)
+if (file.exists(taskinfoFile)==FALSE){
+    taskinfoFile  <- sprintf("%s/input.csv", BASE_PATH)
+}
+modelFile   <- sprintf("%s/%s/_samples.md", BASE_PATH, phase2DirName)
+sampleFile   <- sprintf("%s/%s/_samples.data", BASE_PATH,phase2DirName)
 
 settings        <- parsingParameters(settingFile)
 TIME_QUANTA     <- settings[['TIME_QUANTA']]
