@@ -151,11 +151,13 @@ uncertainIDs <- get_base_names(names(md2$coefficients), isNum=TRUE)
 draw_model(training, md2, TASK_INFO, uncertainIDs, modelBeforeFile)
 
 # verification
-threshold <- find_noFPR(md, training, precise=0.0001)  # lowest probability
-intercepts <- get_intercepts(md, threshold, uncertainIDs, TASK_INFO)
-if (as.double(intercepts[1,])==Inf){
+threshold <- find_noFPR(md2, training, precise=0.0001)  # lowest probability
+intercepts <- get_intercepts(md2, threshold, uncertainIDs, TASK_INFO)
+if (all(as.double(intercepts[1,])!=Inf)==FALSE){
     cat("\n\nNot applicable Phase 2 with the lowest probability\n\n")
-    threshold <- find_noFNR(md, training, precise=0.0001)  # highest probability
+    cat(sprintf("Probability: %.4f",threshold))
+    cat(sprintf("Intercepts: %.8f",intercepts))
+    threshold <- find_noFNR(md2, training, precise=0.0001)  # highest probability
     draw_model(training, md2, TASK_INFO, uncertainIDs, modelErrorFile)
     quit(status=1)
 }

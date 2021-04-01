@@ -14,8 +14,6 @@ setwd(CODE_PATH)
 suppressMessages(library(neldermead))
 source("libs/lib_config.R")
 source("libs/lib_model.R")          # get_intercepts#
-source("libs/lib_sampling.R")       # generate_samples_by_distance
-source("libs/lib_draw.R")           # for drawing the last graph
 setwd(CODE_PATH)
 
 ############################################################
@@ -23,17 +21,14 @@ setwd(CODE_PATH)
 ############################################################
 args <- commandArgs()
 args <- args[-(1:5)]  # get sublist from arguments (remove unnecessary arguments)
-#args <- c("results/TOSEM_80a/CCS/Run01", "_phase2", 10, 20, 0.0023)
+#args <- c("results/TOSEM_80a/CCS/Run01", "_phase2", 0.0003)
 if (length(args)<1){
     cat("Error:: Required parameters: target folder\n\n")
     quit(status=0)
 }
 BASE_PATH       <- sprintf("%s/%s", EXEC_PATH, args[1])
-phase2DirName   <- args[2]  # "_phase2"
-nSamples        <- as.integer(args[3])
-nCandidates     <- as.integer(args[4])
-probability     <- as.double(args[5])
-workID          <- args[6]
+modelFile       <- sprintf("%s/%s", BASE_PATH, args[2])  # "_phase2"
+probability     <- as.double(args[3])
 
 ############################################################
 # SAFE Parameter parsing and setting
@@ -43,22 +38,16 @@ taskinfoFile  <- sprintf("%s/input_reduced.csv", BASE_PATH)
 if (file.exists(taskinfoFile)==FALSE){
     taskinfoFile  <- sprintf("%s/input.csv", BASE_PATH)
 }
-trainingFile   <- sprintf("%s/%s/workdata.csv", BASE_PATH,phase2DirName)
-modelFile   <- sprintf("%s/%s/_samples/sample_%s.md", BASE_PATH, phase2DirName, workID)
-sampleFile   <- sprintf("%s/%s/_samples/sample_%s.data", BASE_PATH, phase2DirName, workID)
-sampleGraph  <- sprintf("%s/%s/_samples/sample_%s.pdf", BASE_PATH, phase2DirName, workID)
-
-#cat(sprintf("trainingFile: %s\n", trainingFile))
-#cat(sprintf("modelFile: %s\n", modelFile))
-#cat(sprintf("sampleFile: %s\n", sampleFile))
-#cat(sprintf("sampleGraph: %s\n", sampleGraph))
-
 
 settings        <- parsingParameters(settingFile)
 TIME_QUANTA     <- settings[['TIME_QUANTA']]
 
 TASK_INFO <- load_taskInfo(taskinfoFile, TIME_QUANTA)
-training <- read.csv(trainingFile, header=TRUE)
+
+#cat(sprintf("ModelFile: %s\n", modelFile))
+#cat(sprintf("settingFile: %s\n", settingFile))
+#cat(sprintf("TASK_INFO: %d\n", nrow(TASK_INFO)))
+
 
 
 # load model
@@ -66,6 +55,27 @@ md.csv<-read.csv(modelFile,header=FALSE)
 model.coef <- as.double(md.csv[2,])
 names(model.coef) <- md.csv[1,]
 model <- list(coefficients=model.coef)
+
+
+
+# new learning (for test)
+#suppressMessages(library(MASS))    # stepAIC
+#cat(":: load model ... \n")
+#dataFile<- sprintf("%s/_results/sampledata.csv", BASE_PATH)
+#training <- read.csv(dataFile, header= TRUE)
+##md <- glm(formula = model.formula, family = "binomial", data = training)
+#
+#model.formula <- "result ~ T2 + T3 + I(T2^2) + I(T3^2) + T2:T3"
+## model.formula <- "result ~ T2 + T3 + T4 + I(T2^2) + I(T3^2) + I(T4^2) + T2:T3 + T2:T4 + T3:T4"
+#model <- glm(formula = model.formula, family = "binomial", data = training)
+#model <- stepAIC(model, direction = 'both', trace=0) # trace=0, stop to print processing
+#model$coefficients
+## Get formula
+#cl<- as.character(model$formula)
+#formula_str <- sprintf("%s %s %s", cl[2], cl[1], cl[3])
+#cat(sprintf("\t Reduced formula: %s\n",formula_str))
+
+
 
 # execute sampling
 targetIDs <- get_base_names(names(model$coefficients), isNum=TRUE)
@@ -77,24 +87,9 @@ if (length(targetIDs)>=2){
     XID <- c()
 }
 
-fx<-generate_line_function(model, probability, yID, TASK_INFO$WCET.MIN[yID], TASK_INFO$WCET.MAX[yID])
-xRange <- find_x_range(TASK_INFO, fx, XID, training, 0.00)
-samples <- generate_samples_by_distance(TASK_INFO, fx, yID, XID, xRange, nSamples, nCandidates)
-
-# write results
-write.table(samples, file=sampleFile,
-            append=FALSE, sep=",", dec=".", row.names = FALSE, col.names = TRUE)
-
-################################################################################
-# printing model into file
-g<-generate_WCET_scatter(samples, TASK_INFO, yID, XID,
-                                 model.func=fx, probability=probability)
-
-ggsave(sampleGraph, g,  width=7, height=5)
-
+bestPoint <- get_bestsize_point(TASK_INFO, model, probability, targetIDs)
 sink()
 close(f)
 
-# save model
-#write.table(t(as.data.frame(md$coefficients)), file="my_model1.rda",
-#            append=FALSE, sep=",", dec=".", row.names = FALSE, col.names = TRUE)
+# write results
+cat(sprintf("X: %f, Y: %f, Area: %f", bestPoint$X, bestPoint$Y, bestPoint$Area))

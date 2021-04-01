@@ -2,6 +2,7 @@
 # load dependencies
 ########################################################
 if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
+    suppressMessages(library(neldermead))
     source("libs/lib_formula.R")  # get_raw_names, get_base_name does not need lib_data.R
 }
 
@@ -167,7 +168,6 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
                     return (ret)
                 }
                 return (Inf)
-                #return (c/-b)
             }
         }else{
             # 2nd order (use sqrt )
@@ -343,7 +343,7 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
             }
             intercepts<-rbind(intercepts, t(items))
         }
-        colnames(intercepts)<- sprintf("T%d",uncertainIDs)
+        colnames(intercepts)<- sprintf("T%d",IDs)
         rownames(intercepts)<- Plist
         return (intercepts)
     }
@@ -432,49 +432,30 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
     # find maximum area by a point on the model function
     # This functions for the specific formula
     #############################################
-    get_bestsize_point<-function(taskInfo, model, P, targetIDs, isGeneral=TRUE){
-
+    get_bestsize_point<-function(taskInfo, model, P, targetIDs){
         # generate IDs
-        answerID <- targetIDs[length(targetIDs)]
-        pointsIDs <- targetIDs[1:(length(targetIDs)-1)]
+        yID <- targetIDs[length(targetIDs)]
+        XID <- targetIDs[1:(length(targetIDs)-1)]
 
-        # find minimum index
-        if (isGeneral==TRUE){
-            fx<-generate_line_function(model, P, answerID, taskInfo$WCET.MIN[answerID], taskInfo$WCET.MAX[answerID])
-        } else{
-            fx<-get_model_func_quadratic(model, P, taskInfo$WCET.MIN[answerID], TASK_INFO$WCET.MAX[answerID])
-        }
-
-        area_func<-function(X){
-            multi <- 1
-            for(v in X){
-                multi <- multi * v
-            }
-            area <- multi * fx(X)
-            # print(sprintf("Area(%.2f, %.2f) = %.2f", X, fx(X), area))
-            return (area)
-        }
-        # find minimum distance in range (WCET.MIN, WCET.MAX)
-        xID <- pointsIDs[1]
+        # nelder-mead
         intercepts<-get_intercepts(model, P, targetIDs, taskInfo)
-        if (is.null(intercepts)==FALSE){
-            v<-fminbnd(area_func, taskInfo$WCET.MIN[[xID]], intercepts[[sprintf("T%d",xID)]], maximum=TRUE)
-            # print(sprintf("xmin=%.4f, fmin=%.4f, niter=%d, estim.prec=%e", v$xmin, v$fmin, v$niter, v$estim.prec))
-            ymax <- fx(v$xmin)
-            area <- ymax * v$xmin
-            # print(sprintf("Xmax=%.4f, Ymax=%.4f, Area=%.4f", v$xmin, ymax, area))
-            rlist<-list(X=v$xmin, Y=ymax, Area=area)
-            # names(rlist)<-c(sprintf("T%d",xID), sprintf("T%d", answerID), "Area")
-            return (rlist)
+        # when exists intercepts...calcuate area
+        if (is.null(intercepts)==FALSE && all(as.double(intercepts[1,])!=Inf)==TRUE){
+            # find minimum index
+            fx<-generate_line_function(model, P, yID, taskInfo$WCET.MIN[yID], taskInfo$WCET.MAX[yID])
+            area_func <- function(X){return (prod(X) * fx(X) * -1)}
+            opt <- optimset(MaxFunEvals=400)
+            nm <- fminbnd(area_func, x0=taskInfo$WCET.MIN[XID], xmin=taskInfo$WCET.MIN[XID], xmax=intercepts[[sprintf("T%d",XID)]], options=opt)
+
+            # return results
+            xmax <- neldermead.get(this=nm, key="xopt")
+            ymax <- fx(xmax)
+            area <- area_func(xmax)*-1
+            #cat(sprintf("(%.4f, %.4f), ==>  area=%.4f\n",xmax, ymax, area))
+
+            return (list(X=xmax, Y=ymax, Area=area))
         }
         return (list(X=NULL, Y=NULL, Area=NULL))
-
-        # Cannot apply neldermead algotirhm with Renjin and it doesn't gives xmin
-        #XID <- pointsIDs
-        #intercepts<-get_intercepts(model, P, targetIDs, taskInfo)
-        #opt <- optimset(MaxFunEvals=400)
-        #nm <- fminbnd(dist_func, x0=taskInfo$WCET.MIN[[XID]], xmin=taskInfo$WCET.MIN[[XID]], xmax=intercepts[[sprintf("T%d",XID)]], options=opt)
-        #fmin <- neldermead.get(this=nm, key="fopt")
     }
 
 }

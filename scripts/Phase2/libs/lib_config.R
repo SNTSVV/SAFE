@@ -87,4 +87,15 @@ if (!Sys.getenv("DEF_LIB_CONFIG", unset=FALSE)=="TRUE") {
   #    }
   #    return(tasks)
   #}
+
+  namedDoubleArrayToStr<-function(item){
+    str<-"["
+    nn<-names(item)
+    for(colID in 1:length(item)){
+      str<- sprintf("%s%s: %.8f, ",str,nn[[colID]], item[[colID]])
+    }
+    str <- sprintf("%s]",str)
+    return (str)
+  }
+
 }
