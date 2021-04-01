@@ -8,7 +8,7 @@ EXEC_PATH <- getwd()
 CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 #EXEC_PATH <- "~/projects/RTA_SAFE"
 #CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
-
+#args <- c("results/TOSEM_80b/CCS/Run01")
 setwd(CODE_PATH)
 source("libs/lib_config.R")
 source("libs/lib_features.R")
@@ -32,7 +32,7 @@ if (length(args)<1){
 BASE_PATH <- sprintf("%s/%s", EXEC_PATH, args[1])
 phase1DirName <- ifelse(length(args)>=2, args[2], "_results")
 outputDirName <- ifelse(length(args)>=3, args[3], "_formula")
-
+termLimits    <- ifelse(length(args)>=4, as.integer(args[4]), NULL)
 
 OUTPUT_PATH <- sprintf("%s/%s", BASE_PATH, outputDirName)
 if(dir.exists(OUTPUT_PATH)==FALSE) dir.create(OUTPUT_PATH, recursive=TRUE)
@@ -106,7 +106,7 @@ features <- c()
 
     import_df<- get_relative_importance(rf, 2)  # Use only Column 2 (IncNodePurity)
     mean_import<-mean(import_df$Importance)
-    features <- select_terms(import_df, mean_import)
+    features <- select_terms(import_df, mean_import, limits=termLimits)  # only selectes less than 2 terms
 
     values<-data.frame(t(import_df$Importance))
     colnames(values) <- import_df$Task

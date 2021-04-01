@@ -30,9 +30,21 @@ if (!Sys.getenv("DEF_LIB_FEATURES", unset=FALSE)=="TRUE") {
         return (import_df)
     }
 
-    select_terms<-function(rel_import, threshold){
+    # select target terms among
+
+    select_terms<-function(rel_import, threshold, limits=NULL){
         # select terms based on threshold_function from the relative_importance(data.frame)
-        selected<- as.character(rel_import[rel_import$Importance>threshold,]$Task)
+        if (is.null(limits)==TRUE) {
+            selected <- as.character(rel_import[rel_import$Importance>threshold,]$Task)
+        }else{
+            ordered_df <-import_df[order(-import_df$Importance),]
+            tasks <- ordered_df$Task
+            if(length(tasks)>limits){
+                selected<-as.character(tasks[1:limits])
+            }else{
+                selected<-as.character(tasks)
+            }
+        }
 
         cat(sprintf("\tselected terms by type2 (%d): %s\n", length(selected), paste(selected)))
         cat(sprintf("\tMean: %.4f\n", threshold))
