@@ -329,7 +329,7 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
         return (g)
     }
 
-    draw_model <- function(data, model, taskInfo, taskIDs, filename){
+    draw_model <- function(data, model, taskInfo, taskIDs, filename, probability=NULL){
         if (!(length(taskIDs)==2 || length(taskIDs)==1)) return(invisible(NULL))
         if (length(taskIDs)==2){
             yID <- taskIDs[length(taskIDs)]
@@ -341,10 +341,12 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
             xID <- allIDs[1]
         }
         uData<-update_data(data, c("No deadline miss", "Deadline miss"))
-        threshold <- find_noFPR(model, uData, precise=0.0001)
-        fx<-generate_line_function(model, threshold, yID, taskInfo$WCET.MIN[yID], taskInfo$WCET.MAX[yID])
+        if (is.null(probability)){
+            probability <- find_noFPR(model, uData, precise=0.0001)
+        }
+        fx<-generate_line_function(model, probability, yID, taskInfo$WCET.MIN[yID], taskInfo$WCET.MAX[yID])
         g<-generate_WCET_scatter(uData, TASK_INFO, xID, yID, labelCol = "labels", legendLoc="rt",
-                                 model.func=fx, probability = threshold,
+                                 model.func=fx, probability = probability,
                                  labelColor=c("#00BFC4", "#F8766D"), labelShape=c(1, 25))
         if (is.null(filename)==TRUE){
             print(g)

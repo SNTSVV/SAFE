@@ -50,6 +50,7 @@ settingFile   <- sprintf("%s/settings.txt", BASE_PATH)
 taskinfoFile  <- sprintf("%s/input.csv", BASE_PATH)
 dataFile      <- sprintf('%s/%s/sampledata.csv', BASE_PATH, phase1DirName)
 modelBeforeFile<- sprintf('%s/%s/model_graph_before.pdf', BASE_PATH, outputDirName)
+modelErrorFile<- sprintf('%s/%s/model_graph_error.pdf', BASE_PATH, outputDirName)
 
 settings        <- parsingParameters(settingFile)
 nSamples        <- settings[["N_SAMPLE_WCET"]]
@@ -68,7 +69,7 @@ cat(sprintf("# of Tasks    : %d\n", nrow(TASK_INFO)))
 # load traning data
 ############################################################
 cat("==============Started===================\n")
-cat(sprintf("Training Data : %s",dataFile))
+cat(sprintf("Training Data : %s\n",dataFile))
 training <- read.csv(dataFile, header=TRUE)
 # check data validity
 nMissed <- nrow(training[training$result==1,])
@@ -79,7 +80,7 @@ if (nMissed ==0){
 }
 if (nPassed ==0){
     print(sprintf("All data missed deadline"))
-    quit(status=1)
+    quit(status="no")
 }
 cat(sprintf("Loaded training data: %d samples (nPassed: %d, nMissed: %d, Ratio of Missed: %.2f%%)\n", nrow(training), nPassed, nMissed, nMissed/nrow(training)*100))
 
@@ -117,7 +118,7 @@ features <- c()
 }
 
 # Print result
-print(features)
+#print(features)
 
 # save initial formula
 formula_str <-  get_formula_complex("result", features)
@@ -154,7 +155,9 @@ threshold <- find_noFPR(md, training, precise=0.0001)  # lowest probability
 intercepts <- get_intercepts(md, threshold, uncertainIDs, TASK_INFO)
 if (as.double(intercepts[1,])==Inf){
     cat("\n\nNot applicable Phase 2 with the lowest probability\n\n")
-    quit(1)
+    threshold <- find_noFNR(md, training, precise=0.0001)  # highest probability
+    draw_model(training, md2, TASK_INFO, uncertainIDs, modelErrorFile)
+    quit(status=1)
 }
 
 #threshold <- find_noFNR(md, training, precise=0.0001)  # highest probability

@@ -457,14 +457,24 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
         # find minimum distance in range (WCET.MIN, WCET.MAX)
         xID <- pointsIDs[1]
         intercepts<-get_intercepts(model, P, targetIDs, taskInfo)
-        v<-fminbnd(area_func, taskInfo$WCET.MIN[[xID]], intercepts[[sprintf("T%d",xID)]], maximum=TRUE)
-        # print(sprintf("xmin=%.4f, fmin=%.4f, niter=%d, estim.prec=%e", v$xmin, v$fmin, v$niter, v$estim.prec))
-        ymax <- fx(v$xmin)
-        area <- ymax * v$xmin
-        # print(sprintf("Xmax=%.4f, Ymax=%.4f, Area=%.4f", v$xmin, ymax, area))
-        rlist<-list(X=v$xmin, Y=ymax, Area=area)
-        # names(rlist)<-c(sprintf("T%d",xID), sprintf("T%d", answerID), "Area")
-        return (rlist)
+        if (is.null(intercepts)==FALSE){
+            v<-fminbnd(area_func, taskInfo$WCET.MIN[[xID]], intercepts[[sprintf("T%d",xID)]], maximum=TRUE)
+            # print(sprintf("xmin=%.4f, fmin=%.4f, niter=%d, estim.prec=%e", v$xmin, v$fmin, v$niter, v$estim.prec))
+            ymax <- fx(v$xmin)
+            area <- ymax * v$xmin
+            # print(sprintf("Xmax=%.4f, Ymax=%.4f, Area=%.4f", v$xmin, ymax, area))
+            rlist<-list(X=v$xmin, Y=ymax, Area=area)
+            # names(rlist)<-c(sprintf("T%d",xID), sprintf("T%d", answerID), "Area")
+            return (rlist)
+        }
+        return (list(X=NULL, Y=NULL, Area=NULL))
+
+        # Cannot apply neldermead algotirhm with Renjin and it doesn't gives xmin
+        #XID <- pointsIDs
+        #intercepts<-get_intercepts(model, P, targetIDs, taskInfo)
+        #opt <- optimset(MaxFunEvals=400)
+        #nm <- fminbnd(dist_func, x0=taskInfo$WCET.MIN[[XID]], xmin=taskInfo$WCET.MIN[[XID]], xmax=intercepts[[sprintf("T%d",XID)]], options=opt)
+        #fmin <- neldermead.get(this=nm, key="fopt")
     }
 
 }

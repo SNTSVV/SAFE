@@ -35,7 +35,7 @@ if (!Sys.getenv("DEF_LIB_FEATURES", unset=FALSE)=="TRUE") {
         selected<- as.character(rel_import[rel_import$Importance>threshold,]$Task)
 
         cat(sprintf("\tselected terms by type2 (%d): %s\n", length(selected), paste(selected)))
-        cat(sprintf("\tMean: %.4f", threshold))
+        cat(sprintf("\tMean: %.4f\n", threshold))
         return (selected)
     }
 
