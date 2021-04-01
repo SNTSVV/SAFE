@@ -34,6 +34,7 @@ nSamples        <- as.integer(args[3])
 nCandidates     <- as.integer(args[4])
 probability     <- as.double(args[5])
 workID          <- args[6]
+PRINT_SAMPLE    <- FALSE
 
 ############################################################
 # SAFE Parameter parsing and setting
@@ -87,11 +88,17 @@ write.table(samples, file=sampleFile,
 
 ################################################################################
 # printing model into file
-g<-generate_WCET_scatter(samples, TASK_INFO, yID, XID,
-                                 model.func=fx, probability=probability)
-
-ggsave(sampleGraph, g,  width=7, height=5)
-
+if (PRINT_SAMPLE==TRUE){
+    if ((length(targetIDs)==2 || length(targetIDs)==1)){
+        if (length(XID)==0){
+            allIDs <- get_task_names(samples, isNum=TRUE)
+            allIDs <- allIDs[-yID]
+            XID <- allIDs[1]
+        }
+        g <- generate_WCET_scatter(samples, TASK_INFO, XID, yID, model.func=fx, probability=probability)
+        ggsave(sampleGraph, g,  width=7, height=5)
+    }
+}
 sink()
 close(f)
 

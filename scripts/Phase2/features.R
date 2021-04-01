@@ -32,16 +32,20 @@ if (length(args)<1){
 BASE_PATH <- sprintf("%s/%s", EXEC_PATH, args[1])
 phase1DirName <- ifelse(length(args)>=2, args[2], "_results")
 outputDirName <- ifelse(length(args)>=3, args[3], "_formula")
-termLimits    <- ifelse(length(args)>=4, as.integer(args[4]), NULL)
+termLimits <- NULL
+if (length(args)>=4){
+    termLimits <- as.integer(args[4])
+}
 
 OUTPUT_PATH <- sprintf("%s/%s", BASE_PATH, outputDirName)
 if(dir.exists(OUTPUT_PATH)==FALSE) dir.create(OUTPUT_PATH, recursive=TRUE)
 
 cat("============== Environment ===================\n")
-cat(sprintf("EXEC_PATH  : %s\n", EXEC_PATH))
-cat(sprintf("CODE_PATH  : %s\n", CODE_PATH))
-cat(sprintf("BASE_PATH  : %s\n", BASE_PATH))
-cat(sprintf("OUTPUT_PATH: %s\n", OUTPUT_PATH))
+cat(sprintf("EXEC_PATH     : %s\n", EXEC_PATH))
+cat(sprintf("CODE_PATH     : %s\n", CODE_PATH))
+cat(sprintf("BASE_PATH     : %s\n", BASE_PATH))
+cat(sprintf("OUTPUT_PATH   : %s\n", OUTPUT_PATH))
+cat(sprintf("TermLimits    : %s\n", ifelse(is.null(termLimits)==TRUE, "NULL", as.character(termLimits))))
 
 ############################################################
 # SAFE Parameter parsing and setting 
@@ -57,6 +61,7 @@ nSamples        <- settings[["N_SAMPLE_WCET"]]
 populationSize  <- settings[['GA_POPULATION']]
 iterations.P1   <- settings[['GA_ITERATION']]
 TIME_QUANTA     <- settings[['TIME_QUANTA']]
+
 
 TASK_INFO <- load_taskInfo(taskinfoFile, TIME_QUANTA)
 cat(sprintf("nSamples      : %d\n", nSamples))
@@ -155,8 +160,8 @@ threshold <- find_noFPR(md2, training, precise=0.0001)  # lowest probability
 intercepts <- get_intercepts(md2, threshold, uncertainIDs, TASK_INFO)
 if (all(as.double(intercepts[1,])!=Inf)==FALSE){
     cat("\n\nNot applicable Phase 2 with the lowest probability\n\n")
-    cat(sprintf("Probability: %.4f",threshold))
-    cat(sprintf("Intercepts: %.8f",intercepts))
+    cat(sprintf("Probability: %.4f\n",threshold))
+    cat(sprintf("Intercepts: %s\n",namedDoubleArrayToStr(intercepts)))
     threshold <- find_noFNR(md2, training, precise=0.0001)  # highest probability
     draw_model(training, md2, TASK_INFO, uncertainIDs, modelErrorFile)
     quit(status=1)
