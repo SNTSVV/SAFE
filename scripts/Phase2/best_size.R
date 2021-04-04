@@ -5,11 +5,11 @@ sink(f)
 ############################################################
 # Load libraries
 ############################################################
-#EXEC_PATH <- getwd()
-#CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
-EXEC_PATH <- "~/projects/RTA_SAFE"
+EXEC_PATH <- getwd()
 CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
-args <- c("results/TOSEM_20a/ICS/Run18", "_phase2/_samples/sample_best_size.md", 0.053600)
+#EXEC_PATH <- "~/projects/RTA_SAFE"
+#CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
+#args <- c("results/TOSEM_20a/ICS/Run18", "_phase2/_samples/sample_best_size.md", 0.053600)
 setwd(CODE_PATH)
 suppressMessages(library(neldermead))
 source("libs/lib_config.R")
