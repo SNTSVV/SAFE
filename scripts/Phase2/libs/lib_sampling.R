@@ -2,8 +2,7 @@
 # load dependencies
 ########################################################
 if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
-    # fminbnd function - Brent's algorithm
-    # fminsearch function - Nelder-mead algorithm
+    # fminbnd by pracma function - Brent's algorithm
     #library(pracma)
     library(neldermead)    # fminbnd by nelder-mead algorithm (Not applied)
     source("libs/lib_model.R")

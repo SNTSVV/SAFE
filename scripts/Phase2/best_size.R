@@ -9,11 +9,11 @@ EXEC_PATH <- getwd()
 CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 #EXEC_PATH <- "~/projects/RTA_SAFE"
 #CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
-
+#args <- c("results/TOSEM_20a/ICS/Run03", "_phase2/_samples/sample_best_size.md", 0.0003)
 setwd(CODE_PATH)
 suppressMessages(library(neldermead))
 source("libs/lib_config.R")
-source("libs/lib_model.R")          # get_intercepts#
+source("libs/lib_area.R")          # get_bestsize_point
 setwd(CODE_PATH)
 
 ############################################################
@@ -21,7 +21,7 @@ setwd(CODE_PATH)
 ############################################################
 args <- commandArgs()
 args <- args[-(1:5)]  # get sublist from arguments (remove unnecessary arguments)
-#args <- c("results/TOSEM_80a/CCS/Run01", "_phase2", 0.0003)
+
 if (length(args)<1){
     cat("Error:: Required parameters: target folder\n\n")
     quit(status=0)
@@ -87,9 +87,20 @@ if (length(targetIDs)>=2){
     XID <- c()
 }
 
-bestPoint <- get_bestsize_point(TASK_INFO, model, probability, targetIDs)
+bestPoint <- list(X=NULL, Y=NULL, Area=NULL)
+
+tryCatch({
+    bestPoint <- get_bestsize_point(TASK_INFO, model, probability, targetIDs)
+}, error = function(e) {
+    message(e)
+})
 sink()
 close(f)
 
-# write results
-cat(sprintf("X: %f, Y: %f, Area: %f", bestPoint$X, bestPoint$Y, bestPoint$Area))
+if (is.null(bestPoint$X)==TRUE){
+    cat('\nERROR:: Error to calculate bestsize point\n')
+    cat("X: NULL, Y: NULL, Area: NULL")
+}else{
+    # write results
+    cat(sprintf("X: %f, Y: %f, Area: %f", bestPoint$X, bestPoint$Y, bestPoint$Area))
+}

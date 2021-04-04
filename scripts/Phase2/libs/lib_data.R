@@ -51,7 +51,7 @@ if (!Sys.getenv("DEF_LIB_DATA", unset=FALSE)=="TRUE") {
         }
         #Add label for result
         if (!is.null(labels)){
-            data$labels <- factor(data$result, labels=labels)
+            data$labels <- factor(data$result, levels=c(0,1), labels=labels)
             data$labels[data$result == 0] <- labels[1]
             data$labels[data$result == 1] <- labels[2]
         }

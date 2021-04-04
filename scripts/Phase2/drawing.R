@@ -15,9 +15,7 @@ source("libs/lib_config.R")
 source("libs/lib_data.R")
 source("libs/lib_features.R")
 source("libs/lib_draw.R")
-suppressMessages(library(MASS))    # stepAIC
 suppressMessages(library(dplyr) )  # ??
-suppressMessages(library(randomForest))
 suppressMessages(library(ggplot2))
 setwd(CODE_PATH)
 

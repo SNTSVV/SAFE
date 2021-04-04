@@ -24,22 +24,30 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
     select_annotate_pos<-function(linePoints, xID, yID, taskInfo)
     {
         if(taskInfo$WCET.MAX[[yID]]>taskInfo$WCET.MAX[[xID]]){
-            for(i in nrow(linePoints):1){
-                if (linePoints$x[[i]] <0) break
-            }
-            xpos <- 0
-            ypos <- linePoints$y[[i]]
+            xpos <- min(linePoints$x)
+            ypos <- max(linePoints$y)
         }else{
-            for(i in 1:nrow(linePoints)){
-                if (linePoints$y[[i]] <0) break
-            }
-            xpos <- linePoints$x[[i]]
-            ypos <- 0
+            xpos <- max(linePoints$x)
+            ypos <- min(linePoints$y)
         }
-        ret <- list()
-        ret[["x"]] <- xpos
-        ret[["y"]] <- ypos
-        return (ret)
+        return (list("x"=xpos, "y"=ypos))
+        #if(taskInfo$WCET.MAX[[yID]]>taskInfo$WCET.MAX[[xID]]){
+        #    for(i in nrow(linePoints):1){
+        #        if (linePoints$x[[i]] <0) break
+        #    }
+        #    xpos <- 0
+        #    ypos <- linePoints$y[[i]]
+        #}else{
+        #    for(i in 1:nrow(linePoints)){
+        #        if (linePoints$y[[i]] <0) break
+        #    }
+        #    xpos <- linePoints$x[[i]]
+        #    ypos <- 0
+        #}
+        #ret <- list()
+        #ret[["x"]] <- xpos
+        #ret[["y"]] <- ypos
+        #return (ret)
     }
 
     get_WCETspace_plot<- function(
@@ -111,7 +119,7 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
             g <- g +
               geom_point( data=showingData, aes(x=showingData[[sprintf("T%d",xID)]], y=showingData[[sprintf("T%d",yID)]], color=as.factor(labels),shape=as.factor(labels)),  size=1, alpha=1) +
               # scale_colour_manual(values=c(cbPalette[2], cbPalette[1]) )
-              scale_colour_manual(values=c("#00BFC4", "#F8766D") )+
+              scale_colour_manual(values=c("#00A1FF", "#F27200") )+ #c("#00BFC4", "#F8766D") )+
               scale_shape_manual(values = c(1, 25)) # 1, 4
 
         }
@@ -292,8 +300,8 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
 
         #drawing
         g <- ggplot()+
-          xlim(0, taskInfo$WCET.MAX[[xID]]) +
-          ylim(0, taskInfo$WCET.MAX[[yID]]) +
+          xlim(taskInfo$WCET.MIN[[xID]]*0.9, taskInfo$WCET.MAX[[xID]]) +
+          ylim(taskInfo$WCET.MIN[[yID]]*0.9, taskInfo$WCET.MAX[[yID]]) +
           xlab(sprintf("T%d WCET", xID)) +
           ylab(sprintf("T%d WCET", yID)) +
           theme_bw() +
@@ -305,7 +313,7 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
         if (is.null(title)==FALSE) g <- g + ggtitle(title)
 
         if (is.null(labelCol)){
-            g <- g + geom_point(data=data, aes(x=data[[sprintf("T%d", xID)]], y=data[[sprintf("T%d", yID)]]))
+            g <- g + geom_point(data=data, aes(x=data[[sprintf("T%d", xID)]], y=data[[sprintf("T%d", yID)]]), size=1, alpha=0.7)
         }else{
             g <- g + geom_point(data=data, aes(color=as.factor(data[[labelCol]]),
                                                shape=as.factor(data[[labelCol]]),
@@ -317,12 +325,13 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
 
         # add function line
         if (is.null(model.func)==FALSE){
+            model.line.color <- "#000000" #"#017100"
             mline <- get_func_points(model.func, taskInfo$WCET.MIN[[xID]], taskInfo$WCET.MAX[[xID]], nPoints=300)
             if (is.null(mline)==FALSE){
-                g <- g + geom_point(data=mline, aes(x=x, y=y), color='blue', alpha=0.9, size=0.1)
+                g <- g + geom_point(data=mline, aes(x=x, y=y), color=model.line.color, alpha=1, size=0.1)
                 if (is.null(probability)==FALSE){
                     pos <- select_annotate_pos(mline, xID, yID, taskInfo)
-                    g<- g + annotate("text", x=pos$x, y=pos$y, label = sprintf("P=%.2f%%", probability*100), color='blue', size=5, hjust=-0.1, vjust=0.1)
+                    g<- g + annotate("text", x=pos$x, y=pos$y, label = sprintf("P=%.2f%%", probability*100), color=model.line.color, size=5, hjust=-0.1, vjust=0.1)
                 }
             }
         }
@@ -347,7 +356,7 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
         fx<-generate_line_function(model, probability, yID, taskInfo$WCET.MIN[yID], taskInfo$WCET.MAX[yID])
         g<-generate_WCET_scatter(uData, TASK_INFO, xID, yID, labelCol = "labels", legendLoc="rt",
                                  model.func=fx, probability = probability,
-                                 labelColor=c("#00BFC4", "#F8766D"), labelShape=c(1, 25))
+                                 labelColor=c("#3ECCFF", "#F2A082"), labelShape=c(1, 25))  #  c("#00A1FF", "#F27200"),  c("#00BFC4", "#F8766D")  // green, red
         if (is.null(filename)==TRUE){
             print(g)
         }else{

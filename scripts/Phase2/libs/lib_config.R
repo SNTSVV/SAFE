@@ -18,6 +18,7 @@ if (!Sys.getenv("DEF_LIB_CONFIG", unset=FALSE)=="TRUE") {
   # The palette with grey:
   # cbPalette <- c( "#00BFC4", "#F8766D", "#009E73", "#D55E00", "#0072B2", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442",   "#CC79A7")
   cbPalette <- c( "#000000", "#AAAAAA", "#009E73", "#D55E00", "#0072B2", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442",   "#CC79A7")
+  #c("#3ECCFF", "#F2A082"), c("#00A1FF", "#F27200")
   UNIT <- 1
   UNIT_STR<-"(s)"
 

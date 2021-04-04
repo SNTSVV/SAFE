@@ -8,7 +8,7 @@ EXEC_PATH <- getwd()
 CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 #EXEC_PATH <- "~/projects/RTA_SAFE"
 #CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
-#args <- c("results/TOSEM_80b/CCS/Run01")
+#args <- c("results/TOSEM_80a/ICS/Run01", "_results", "_formula", 2)
 setwd(CODE_PATH)
 source("libs/lib_config.R")
 source("libs/lib_features.R")
@@ -48,7 +48,7 @@ cat(sprintf("OUTPUT_PATH   : %s\n", OUTPUT_PATH))
 cat(sprintf("TermLimits    : %s\n", ifelse(is.null(termLimits)==TRUE, "NULL", as.character(termLimits))))
 
 ############################################################
-# SAFE Parameter parsing and setting 
+# SAFE Parameter parsing and setting
 ############################################################
 settingFile   <- sprintf("%s/settings.txt", BASE_PATH)
 taskinfoFile  <- sprintf("%s/input.csv", BASE_PATH)
@@ -153,25 +153,24 @@ cat(sprintf("\tSaved formula into %s\n", formulaPath))
 
 # Draw current model
 uncertainIDs <- get_base_names(names(md2$coefficients), isNum=TRUE)
-draw_model(training, md2, TASK_INFO, uncertainIDs, modelBeforeFile)
+#draw_model(training, md2, TASK_INFO, uncertainIDs, modelBeforeFile)
+draw_model(training, md2, TASK_INFO, uncertainIDs, NULL)
 
 # verification
 threshold <- find_noFPR(md2, training, precise=0.0001)  # lowest probability
-intercepts <- get_intercepts(md2, threshold, uncertainIDs, TASK_INFO)
-if (all(as.double(intercepts[1,])!=Inf)==FALSE){
-    cat("\n\nNot applicable Phase 2 with the lowest probability\n\n")
-    cat(sprintf("Probability: %.4f\n",threshold))
-    cat(sprintf("Intercepts: %s\n",namedDoubleArrayToStr(intercepts)))
-    threshold <- find_noFNR(md2, training, precise=0.0001)  # highest probability
-    draw_model(training, md2, TASK_INFO, uncertainIDs, modelErrorFile)
-    quit(status=1)
-}
+cat(sprintf("Probability: %.4f\n",threshold))
+for(taskID in uncertainIDs){
+    intercept <- get_intercepts(md2, threshold, taskID, TASK_INFO)
+    if (ncol(intercept)>=2 || is.infinite(intercept[1,1])==TRUE){
+        cat(sprintf("Intercepts: %s\n",namedDoubleArrayToStr(intercept)))
+        cat("\nNot applicable Phase 2 with the lowest probability\n\n")
+        threshold <- find_noFNR(md2, training, precise=0.0001)  # highest probability
+        draw_model(training, md2, TASK_INFO, uncertainIDs, modelErrorFile)
+        quit(status=1)
+    }else{
+        cat(sprintf("Intercepts: %s\n",namedDoubleArrayToStr(intercept)))
+    }
 
-#threshold <- find_noFNR(md, training, precise=0.0001)  # highest probability
-#intercepts <- get_intercepts(md, threshold, uncertainIDs, TASK_INFO)
-#if (as.double(intercepts[1,])==Inf){
-#    cat("Not applicable Phase 2 with the heighest probability")
-#}
-#
+}
 cat("Done.\n")
 
