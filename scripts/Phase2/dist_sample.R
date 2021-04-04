@@ -63,7 +63,7 @@ training <- read.csv(trainingFile, header=TRUE)
 
 
 # load model
-md.csv<-read.csv(modelFile,header=FALSE)
+md.csv<-read.csv(modelFile,header=FALSE, stringsAsFactors=FALSE)
 model.coef <- as.double(md.csv[2,])
 names(model.coef) <- md.csv[1,]
 model <- list(coefficients=model.coef)
