@@ -25,3 +25,10 @@ META-INF/
 ############################
 logs/
 venv/
+.Rproj.user
+results/
+res/
+scripts/executes
+scripts/R
+scripts/utils
+scripts/schedule
