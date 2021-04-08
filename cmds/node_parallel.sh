@@ -1,4 +1,21 @@
 #!/bin/bash -l
+#
+#SBATCH -J GnuParallel
+#SBATCH --time=2-00:00:00     # 1 hour
+#SBATCH --mail-type=all
+#SBATCH --mail-user=jaekwon.lee@uni.lu
+#SBATCH --qos=normal
+#SBATCH --partition=batch
+#SBATCH --mem-per-cpu=4G             # Stick to maximum size of memory
+#SBATCH -N 1                  # Stick to a single node
+### -c, --cpus-per-task=<ncpus> if your application is using multithreading, increase the number of cpus(cores), otherwise just use 1
+#SBATCH -c 1
+###     /!\ Adapt '--ntasks-per-node' above accordingly
+#SBATCH --ntasks-per-node 1
+##SBATCH -o %x-%j.out          # Logfile: <jobname>-<jobid>.out
+#
+
+
 # Time-stamp: <Wed 2019-12-11 14:22 svarrette>
 #############################################################################
 # Slurm launcher for embarrassingly parallel problems combining srun and GNU
@@ -54,20 +71,18 @@ EOF
 start(){
   start=$(date +%s)
   cat <<EOF
-  ################################################
-  ### Task command   : ${TASK}
-  ### SRUN option    : ${SRUN} -e ${LOG_OUTPUT}.{1}.out -o ${LOG_OUTPUT}.{1}.out
-  ### Parallel option: ${PARALLEL}
-  ### Starting timestamp (s): ${start}
-  ################### START ######################
-
+################################################
+### Task command   : ${TASK}
+### SRUN option    : ${SRUN} -e ${LOG_OUTPUT}.{1}.out -o ${LOG_OUTPUT}.{1}.out
+### Parallel option: ${PARALLEL}
+### Starting timestamp (s): ${start}
+################### START ######################
 EOF
 }
 
 finish() {
   end=$(date +%s)
-cat <<EOF
-
+  cat <<EOF
 #################### END #######################
 ### Ending timestamp (s): ${end}
 ### Elapsed time     (s): $(($end-$start))
@@ -84,21 +99,6 @@ logfile logs/state*.parallel.log or it will think it has already finished!
 EOF
 }
 
-# find string in the text (reverse direction)
-# parameters: $1 - string te be searched
-#             $2 - string to find
-rindex(){
-  text=$1
-  len=${#text}
-  ret=-1
-  for((i=$len-1;i>=0;i--)); do
-    if [[ "${text:$i:1}" == "$2" ]]; then
-      ret=$i;
-      break;
-    fi
-  done
-  echo $ret
-}
 
 ##############################################################################
 ##############################################################################
@@ -110,30 +110,22 @@ fi
 
 module purge || print_error_and_exit "Unable to find the module command - you're NOT on a computing node"
 # module load [...]
-#module load gnu_parallel
-module load lang/Java/1.8.0_162
-module load swenv/default-env/latest
-module load swenv/default-env/v1.1-20180716-production
-module load lang/R/3.4.4-intel-2018a-X11-20180131-bare
+#module load lang/Java/1.8.0_162
+#module load swenv/default-env/latest
+#module load swenv/default-env/v1.1-20180716-production
+#module load lang/R/3.4.4-intel-2018a-X11-20180131-bare
+module load lang/Java/1.8.0_241
 
+#if [ ${SLURMD_NODENAME:5} -gt 108 ]; then
+#  echo "R_LIBS_USER=~/R/3.6-intel/" > ~/.Renviron
+#  module load lang/R/3.6.2-intel-2019b-bare
+#else
+#  echo "R_LIBS_USER=~/R/3.6/" > ~/.Renviron
+#  module load lang/R/3.6.2-foss-2019b-bare
+#fi
+#module load lang/R/3.6.2-intel-2019b-bare   # Error to install cubature
+module load lang/R/3.6.2-foss-2019b-bare
 
-#######################
-# Create logs directory
-mkdir -p logs
-
-#
-#SBATCH -J GnuParallel
-#SBATCH --time=0-01:00:00     # 1 hour
-#SBATCH --partition=batch
-#SBATCH --qos normal
-#SBATCH -N 1                  # Stick to a single node
-#SBATCH --ntasks-per-node 28
-### -c, --cpus-per-task=<ncpus>
-###     (multithreading) Request that ncpus be allocated per task
-###     /!\ Adapt '--ntasks-per-node' above accordingly
-#SBATCH -c 1
-#SBATCH -o %x-%j.out          # Logfile: <jobname>-<jobid>.out
-#
 
 ##############################################################################
 ##############################################################################
@@ -142,6 +134,7 @@ mkdir -p logs
 
 CMD_PREFIX=
 TASK="stress --cpu ${SLURM_CPUS_PER_TASK:=1} --timeout 60s --vm-hang"  ## Test code
+RUN_NUMS=1
 START_RUN_ID=1
 # Parse the command-line argument
 while [ $# -ge 1 ]; do
@@ -149,11 +142,13 @@ while [ $# -ge 1 ]; do
         -h | --help) usage; exit 0;;
         -d | --noop | --dry-run) CMD_PREFIX=echo;;
         -s | --start) START_RUN_ID=$2; shift;;
+        -r | --runNum) RUN_NUMS=$2; shift;;
         -l | --log) LOG_OUTPUT=$2; shift;;
         *) TASK="$*"; break; ;;
     esac
     shift;
 done
+
 
 # the --exclusive to srun makes srun use distinct CPUs for each job step
 # -N1 -n1 allocates a single core to each task - Adapt accordingly
@@ -166,9 +161,9 @@ SRUN="srun --exclusive -N1 -n1 --cpus-per-task=${SLURM_CPUS_PER_TASK:=1} --cpu-b
 # --resume makes parallel use the joblog to resume from where it has left off
 #   the combination of --joblog and --resume allow jobs to be resubmitted if
 #   necessary and continue from where they left off
-idx=$(rindex ${LOG_OUTPUT} "/")
-parentPath=${LOG_OUTPUT:0:$idx}
-PARALLEL="parallel --delay .2 -j ${SLURM_NTASKS} --joblog ${parentPath}/${SLURM_JOB_ID}_${SLURM_JOB_NAME}_parallel.log" # --resume"
+LOG_OUTPUT=${LOG_OUTPUT//%j/${SLURM_JOB_ID}}
+LOG_OUTPUT=${LOG_OUTPUT//%x/${SLURM_JOB_NAME}}
+PARALLEL="parallel --delay .2 -j ${SLURM_NTASKS} --joblog ${LOG_OUTPUT}_parallel.log" # --resume"
 
 
 # this runs the parallel command you want, i.e. running the
@@ -182,14 +177,14 @@ PARALLEL="parallel --delay .2 -j ${SLURM_NTASKS} --joblog ${parentPath}/${SLURM_
 
 # create a list of run IDs (list of string with delimiter ' ')
 # if we use variable in PARALLEL command, it doesn't work with {x..y} notation
-END_RUN_ID=`expr $START_RUN_ID + $SLURM_NTASKS - 1`   # set END run ID
+#END_RUN_ID=`expr $START_RUN_ID + $SLURM_NTASKS - 1`   # set END run ID
 RUN_IDS=""
-for ((runID=$START_RUN_ID; runID<=$END_RUN_ID; runID++)); do
+for ((runID=$START_RUN_ID; runID<=${RUN_NUMS}; runID++)); do
   var=$(printf '%02d' "${runID}")
   RUN_IDS="${RUN_IDS} ${var}"
 done
 
 # Execute parallel works!
 start
-${CMD_PREFIX} ${PARALLEL} "${SRUN} -e ${LOG_OUTPUT}.{1}.out -o ${LOG_OUTPUT}.{1}.out ${TASK} --runID {1}" ::: ${RUN_IDS}
+${CMD_PREFIX} ${PARALLEL} "${SRUN} -e ${LOG_OUTPUT}.{1}.out -o ${LOG_OUTPUT}.{1}.out ${TASK}" ::: ${RUN_IDS}
 finish
