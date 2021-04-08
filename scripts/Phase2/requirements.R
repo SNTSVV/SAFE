@@ -8,9 +8,11 @@ install.packages("MASS", repos="https://cloud.r-project.org/")
 install.packages("dplyr", repos="https://cloud.r-project.org/")
 install.packages("ggplot2", repos="https://cloud.r-project.org/")
 install.packages("MLmetrics", repos="https://cloud.r-project.org/")
+install.packages("randomForest", repos="https://cloud.r-project.org/")
 install.packages("neldermead", repos="https://cloud.r-project.org/")
 install.packages("stringr", repos="https://cloud.r-project.org/")
 install.packages("cubature", repos="https://cloud.r-project.org/")
+
 
 # for testing
 install.packages("scales", repos="https://cloud.r-project.org/")
