@@ -2,7 +2,7 @@
 # load dependencies
 ########################################################
 if (Sys.getenv("JAVA_RUN", unset=FALSE)==FALSE) {
-    suppressMessages(library(cubature))
+    #suppressMessages(library(cubature))
     source("libs/lib_data.R")     # get_task_names
     source("libs/lib_metrics.R")  # find_noFPR, FPRate
 }
@@ -18,73 +18,73 @@ if (!Sys.getenv("DEV_LIB_EVALUATE", unset=FALSE)=="TRUE") {
     # Area
     #  - dependency: TASK_INFO
     #############################################
-    areaUnderLine <- function(model, prob, stepSize, IDs, prev=NULL, UNIT.WCET=1){
-        if (length(IDs)<=0) return (-1)
-        # get index value
-        idx = length(prev)+1
-        tID <- IDs[idx]
-
-        # get values in [minWCET, maxWCET] by stepSize
-        minWCET<-TASK_INFO$WCET.MIN[[tID]]*UNIT.WCET
-        maxWCET<-TASK_INFO$WCET.MAX[[tID]]*UNIT.WCET
-        values<-seq(minWCET, maxWCET, by=stepSize*UNIT.WCET)
-
-        if (length(IDs)==idx){
-            # cat(sprintf('T%d - %d [%.3f, %.3f]  ', tID, length(values), minWCET, maxWCET))
-            if (idx==1){
-                valueSet <- data.frame(values)
-            }else{
-                valueSet <- data.frame(t(prev), v=values)
-            }
-            colnames(valueSet)<- sprintf("T%d", IDs)
-            pV<-predict(model, valueSet, type='response')
-            # cat("\n")
-            # cat(pV)
-            # cat("\n")
-            # cat(ifelse(pV<prob, 1, 0))
-            # cat("\n")
-            nArea<-sum(ifelse(pV<prob, 1, 0))*stepSize*stepSize  # set positive = 1 to calculate area
-        }
-        else{
-            # cat(sprintf('Task %d points %d in range [%.3f, %.3f]\n', tID, length(values), minWCET, maxWCET))
-            nArea<-0
-            for(x in values){
-                # cat(sprintf('\tselected %10.3f....', x))
-                if (idx==1){
-                    selected <- c(x)
-                }else{
-                    selected <- c(prev, x)
-                }
-                subArea <- areaUnderLine(model, prob, stepSize, IDs, selected, UNIT.WCET)
-                nArea <- nArea + subArea
-                # cat(sprintf('subArea(%.6f) ==> Area(%.6f)\n', subArea, nArea))
-                if (subArea==0) break
-            }
-        }
-        return (nArea)
-    }
-
-    areaUnderLine_lib <- function(model, prob, IDs, UNIT_WCET=1){
-        if (length(IDs)<=0) return (-1)
-
-        minLimit<-TASK_INFO$WCET.MIN[IDs]*UNIT_WCET
-        maxLimit<-as.numeric(get_intercepts(mdx, 0.5, IDs))
-
-        model_function <- function(x) {
-            # make input set
-            values<- data.frame(t(x))
-            colnames(values)<- sprintf("T%d",IDs)
-
-            #return value
-            rValue <- predict(model, newdata=values, type="link")
-            rValue <- rValue - log(prob/(1-prob))
-            return (rValue)
-        }
-
-        v<-adaptIntegrate(model_function, lowerLimit = minLimit, upperLimit = maxLimit)
-        # cat(sprintf("Integral: %15.4f (Error:%.4f)", v$integral, v$error))
-        return(v$integral)
-    }
+    #areaUnderLine <- function(model, prob, stepSize, IDs, prev=NULL, UNIT.WCET=1){
+    #    if (length(IDs)<=0) return (-1)
+    #    # get index value
+    #    idx = length(prev)+1
+    #    tID <- IDs[idx]
+    #
+    #    # get values in [minWCET, maxWCET] by stepSize
+    #    minWCET<-TASK_INFO$WCET.MIN[[tID]]*UNIT.WCET
+    #    maxWCET<-TASK_INFO$WCET.MAX[[tID]]*UNIT.WCET
+    #    values<-seq(minWCET, maxWCET, by=stepSize*UNIT.WCET)
+    #
+    #    if (length(IDs)==idx){
+    #        # cat(sprintf('T%d - %d [%.3f, %.3f]  ', tID, length(values), minWCET, maxWCET))
+    #        if (idx==1){
+    #            valueSet <- data.frame(values)
+    #        }else{
+    #            valueSet <- data.frame(t(prev), v=values)
+    #        }
+    #        colnames(valueSet)<- sprintf("T%d", IDs)
+    #        pV<-predict(model, valueSet, type='response')
+    #        # cat("\n")
+    #        # cat(pV)
+    #        # cat("\n")
+    #        # cat(ifelse(pV<prob, 1, 0))
+    #        # cat("\n")
+    #        nArea<-sum(ifelse(pV<prob, 1, 0))*stepSize*stepSize  # set positive = 1 to calculate area
+    #    }
+    #    else{
+    #        # cat(sprintf('Task %d points %d in range [%.3f, %.3f]\n', tID, length(values), minWCET, maxWCET))
+    #        nArea<-0
+    #        for(x in values){
+    #            # cat(sprintf('\tselected %10.3f....', x))
+    #            if (idx==1){
+    #                selected <- c(x)
+    #            }else{
+    #                selected <- c(prev, x)
+    #            }
+    #            subArea <- areaUnderLine(model, prob, stepSize, IDs, selected, UNIT.WCET)
+    #            nArea <- nArea + subArea
+    #            # cat(sprintf('subArea(%.6f) ==> Area(%.6f)\n', subArea, nArea))
+    #            if (subArea==0) break
+    #        }
+    #    }
+    #    return (nArea)
+    #}
+    #
+    #areaUnderLine_lib <- function(model, prob, IDs, UNIT_WCET=1){
+    #    if (length(IDs)<=0) return (-1)
+    #
+    #    minLimit<-TASK_INFO$WCET.MIN[IDs]*UNIT_WCET
+    #    maxLimit<-as.numeric(get_intercepts(mdx, 0.5, IDs))
+    #
+    #    model_function <- function(x) {
+    #        # make input set
+    #        values<- data.frame(t(x))
+    #        colnames(values)<- sprintf("T%d",IDs)
+    #
+    #        #return value
+    #        rValue <- predict(model, newdata=values, type="link")
+    #        rValue <- rValue - log(prob/(1-prob))
+    #        return (rValue)
+    #    }
+    #
+    #    v<-adaptIntegrate(model_function, lowerLimit = minLimit, upperLimit = maxLimit)
+    #    # cat(sprintf("Integral: %15.4f (Error:%.4f)", v$integral, v$error))
+    #    return(v$integral)
+    #}
 
     integrateMC <- function(taskInfo, n,model,IDs, prob, upper=NULL, lower=NULL, graph.on=FALSE){
         # calculate range

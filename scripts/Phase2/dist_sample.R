@@ -9,7 +9,7 @@ EXEC_PATH <- getwd()
 CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 #EXEC_PATH <- "~/projects/RTA_SAFE"
 #CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
-
+#args <- c("results/TOSEM_20a/ESAIL/Run01", "_phase2", 10, 20, 0.0010, "dist_sampling")
 setwd(CODE_PATH)
 suppressMessages(library(neldermead))
 source("libs/lib_config.R")
@@ -23,7 +23,7 @@ setwd(CODE_PATH)
 ############################################################
 args <- commandArgs()
 args <- args[-(1:5)]  # get sublist from arguments (remove unnecessary arguments)
-#args <- c("results/TOSEM_80a/CCS/Run01", "_phase2", 10, 20, 0.0023)
+
 if (length(args)<1){
     cat("Error:: Required parameters: target folder\n\n")
     quit(status=0)
@@ -34,7 +34,8 @@ nSamples        <- as.integer(args[3])
 nCandidates     <- as.integer(args[4])
 probability     <- as.double(args[5])
 workID          <- args[6]
-PRINT_SAMPLE    <- FALSE
+PRINT_SAMPLE    <- TRUE
+sampleDir       <- "_samples"
 
 ############################################################
 # SAFE Parameter parsing and setting
@@ -45,14 +46,14 @@ if (file.exists(taskinfoFile)==FALSE){
     taskinfoFile  <- sprintf("%s/input.csv", BASE_PATH)
 }
 trainingFile   <- sprintf("%s/%s/workdata.csv", BASE_PATH,phase2DirName)
-modelFile   <- sprintf("%s/%s/_samples/sample_%s.md", BASE_PATH, phase2DirName, workID)
-sampleFile   <- sprintf("%s/%s/_samples/sample_%s.data", BASE_PATH, phase2DirName, workID)
-sampleGraph  <- sprintf("%s/%s/_samples/sample_%s.pdf", BASE_PATH, phase2DirName, workID)
+modelFile   <- sprintf("%s/%s/sample_%s.md", BASE_PATH, sampleDir, workID)
+sampleFile   <- sprintf("%s/%s/sample_%s.data", BASE_PATH, sampleDir, workID)
+sampleGraph  <- sprintf("%s/%s/sample_%s.pdf", BASE_PATH, sampleDir, workID)
 
-#cat(sprintf("trainingFile: %s\n", trainingFile))
-#cat(sprintf("modelFile: %s\n", modelFile))
-#cat(sprintf("sampleFile: %s\n", sampleFile))
-#cat(sprintf("sampleGraph: %s\n", sampleGraph))
+cat(sprintf("trainingFile: %s\n", trainingFile))
+cat(sprintf("modelFile: %s\n", modelFile))
+cat(sprintf("sampleFile: %s\n", sampleFile))
+cat(sprintf("sampleGraph: %s\n", sampleGraph))
 
 
 settings        <- parsingParameters(settingFile)
@@ -101,7 +102,3 @@ if (PRINT_SAMPLE==TRUE){
 }
 sink()
 close(f)
-
-# save model
-#write.table(t(as.data.frame(md$coefficients)), file="my_model1.rda",
-#            append=FALSE, sep=",", dec=".", row.names = FALSE, col.names = TRUE)
