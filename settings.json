@@ -3,6 +3,7 @@
   "INPUT_FILE"          : "res/task_descriptions.csv",    // The path of task descriptions
   "BASE_PATH"           : "results/GASearch",             // The path will be stored all the experiment outputs in Phase 1, It will be used the input base path for the Phase 2.
   "WORKNAME"            : "_phase2",                      // Output path for Phase 2
+  "FORMULA_PATH"        : "_formula",                      // Formula path for Phase 2
   "RUN_MAX"             : 0,                              // Total number of experiments, if you set RUN_NUM != 0, this option will be ignored
   "RUN_NUM"             : 0,                              // Identity of the experiments, if you set RUN_NUM = 1, BASE_PATH will be changed to <BASE_PATH>/Run01
 
@@ -10,7 +11,7 @@
   "SCHEDULER"           : "SQMScheduler",   // "RMSchedulerBest",
   "TARGET_TASKLIST"     : "",                // Set the identities of tasks seperated by comma(,)
   "TIME_QUANTA"         : 0.1,               // Scheduler time unit
-  "TIME_MAX"            : 1800000,           // Maximum simulation time of the scheduler
+  "TIME_MAX"            : 0,                  // Maximum simulation time of the scheduler
   "EXTEND_SCHEDULER"    : true,              // Please set true, if you want to execute scheduler after finished the simulation time for
 
 // Genetic algorithm variables
@@ -35,6 +36,7 @@
   "PRE_TEST"            : false,
 
 //Second phase
+  "N_TERMS"             : 0,
   "SAMPLING_METHOD"     : "distance", //distance", // Sampling approach for the Phase 2, {"distance", "random"}
   "N_MODEL_UPDATES"     : 100,        // The number of model refinements
   "N_SAMPLE_SOLUTONS"   : 10,
