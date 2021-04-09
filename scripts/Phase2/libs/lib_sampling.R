@@ -328,7 +328,7 @@ if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
             #cat(sprintf("%d,",value))
             X<-targetData[xIdx,]
             y<-fun(X)
-            if (is.infinite(y)==TRUE) next
+            if (length(y)==1 && is.infinite(y)==TRUE) next
             for (idx in 1:length(maxX)){
                 if (X[idx]>maxX[idx]){
                     maxX[idx] <- X[idx]

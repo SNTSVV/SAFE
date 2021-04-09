@@ -157,7 +157,9 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
             if(showMessage) cat(sprintf("\tAdding model line with %5.2f%% ....\n",prob*100))
 
             funcLine <- generate_line_function(mdx, prob, yID, minY=TASK_INFO$WCET.MIN[[yID]]*UNIT, maxY=TASK_INFO$WCET.MAX[[yID]]*UNIT)
-            fx <- get_func_points(funcLine, TASK_INFO$WCET.MIN[[xID]]*UNIT, TASK_INFO$WCET.MAX[[xID]]*UNIT, nPoints=300)
+            #fx <- get_func_points(funcLine, TASK_INFO$WCET.MIN[[xID]]*UNIT, TASK_INFO$WCET.MAX[[xID]]*UNIT, nPoints=300)
+            fx <- get_func_points(funcLine, TASK_INFO, xID, yID, nPoints=300)
+
             lineColor <- ifelse(threshold==prob, "blue", "black")
 
             # add line graph to the g
@@ -300,8 +302,8 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
 
         #drawing
         g <- ggplot()+
-          xlim(taskInfo$WCET.MIN[[xID]]*0.9, taskInfo$WCET.MAX[[xID]]) +
-          ylim(taskInfo$WCET.MIN[[yID]]*0.9, taskInfo$WCET.MAX[[yID]]) +
+          xlim(taskInfo$WCET.MIN[[xID]], taskInfo$WCET.MAX[[xID]]) +
+          ylim(taskInfo$WCET.MIN[[yID]], taskInfo$WCET.MAX[[yID]]) +
           xlab(sprintf("T%d WCET", xID)) +
           ylab(sprintf("T%d WCET", yID)) +
           theme_bw() +
@@ -326,7 +328,7 @@ if (!Sys.getenv("DEV_LIB_DRAW", unset=FALSE)=="TRUE") {
         # add function line
         if (is.null(model.func)==FALSE){
             model.line.color <- "#000000" #"#017100"
-            mline <- get_func_points(model.func, taskInfo$WCET.MIN[[xID]], taskInfo$WCET.MAX[[xID]], nPoints=300)
+            mline <- get_func_points(model.func, taskInfo, xID, yID, nPoints=300) # taskInfo$WCET.MIN[[xID]], taskInfo$WCET.MAX[[xID]],
             if (is.null(mline)==FALSE){
                 g <- g + geom_point(data=mline, aes(x=x, y=y), color=model.line.color, alpha=1, size=0.1)
                 if (is.null(probability)==FALSE){

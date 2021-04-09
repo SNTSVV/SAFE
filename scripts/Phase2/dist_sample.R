@@ -29,13 +29,12 @@ if (length(args)<1){
     quit(status=0)
 }
 BASE_PATH       <- sprintf("%s/%s", EXEC_PATH, args[1])
-phase2DirName   <- args[2]  # "_phase2"
-nSamples        <- as.integer(args[3])
-nCandidates     <- as.integer(args[4])
-probability     <- as.double(args[5])
-workID          <- args[6]
+modelFile       <- sprintf("%s/%s", BASE_PATH, args[2])
+trainingFile    <- sprintf("%s/%s", BASE_PATH, args[3])
+nSamples        <- as.integer(args[4])
+nCandidates     <- as.integer(args[5])
+probability     <- as.double(args[6])
 PRINT_SAMPLE    <- TRUE
-sampleDir       <- "_samples"
 
 ############################################################
 # SAFE Parameter parsing and setting
@@ -45,10 +44,8 @@ taskinfoFile  <- sprintf("%s/input_reduced.csv", BASE_PATH)
 if (file.exists(taskinfoFile)==FALSE){
     taskinfoFile  <- sprintf("%s/input.csv", BASE_PATH)
 }
-trainingFile   <- sprintf("%s/%s/workdata.csv", BASE_PATH,phase2DirName)
-modelFile   <- sprintf("%s/%s/sample_%s.md", BASE_PATH, sampleDir, workID)
-sampleFile   <- sprintf("%s/%s/sample_%s.data", BASE_PATH, sampleDir, workID)
-sampleGraph  <- sprintf("%s/%s/sample_%s.pdf", BASE_PATH, sampleDir, workID)
+sampleFile   <- sprintf("%s.data", modelFile)
+sampleGraph  <- sprintf("%s.pdf", modelFile)
 
 cat(sprintf("trainingFile: %s\n", trainingFile))
 cat(sprintf("modelFile: %s\n", modelFile))

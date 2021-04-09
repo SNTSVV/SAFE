@@ -163,10 +163,10 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
                 }
                 c <- c - log(P/(1-P))
                 ret<-(c/-b)
-                if (minY <= ret && ret<=maxY){
-                    return (ret)
-                }
-                return (Inf)
+                return (ret)
+                #if (minY <= ret && ret<=maxY){
+                #}
+                #return (Inf)
             }
         }else{
             # 2nd order (use sqrt )
@@ -197,12 +197,20 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
 
                 # return values
                 answers <- c()
-                if (minY<=s1 && s1 <=maxY){
+                if (is.nan(s1)==FALSE && is.infinite(s1)==FALSE){
                     answers <- c(answers, s1)
                 }
-                if (minY<=s2 && s2<=maxY){
+                if (is.nan(s2)==FALSE && is.infinite(s2)==FALSE){
                     answers <- c(answers, s2)
                 }
+
+                #answers <- c()
+                #if (minY<=s1 && s1 <=maxY){
+                #    answers <- c(answers, s1)
+                #}
+                #if (minY<=s2 && s2<=maxY){
+                #    answers <- c(answers, s2)
+                #}
                 if (length(answers)==0){
                     # no answers in the range [minY, maxY]
                     return (Inf)
@@ -219,7 +227,11 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
     #   - fun: a function to get points
     #   - minX, maxY: range of X
     #   - nPoints: number of points
-    get_func_points<-function(fun, minX, maxX, nPoints){
+    get_func_points<-function(fun, taskInfo, xID, yID, nPoints){
+        minX <- taskInfo$WCET.MIN[[xID]]
+        maxX <- taskInfo$WCET.MAX[[xID]]
+        minY <- taskInfo$WCET.MIN[[yID]]
+        maxY <- taskInfo$WCET.MAX[[yID]]
         # find x-axis based points
         ..gen_points<-function(by){
             df <- data.frame()
@@ -235,6 +247,7 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
             if (!(length(v)==1 && is.infinite(v))){
                 df <- rbind(df, data.frame(x=x, y=v))
             }
+            df<-df[df$y>=minY & df$y<=maxY & df$x>=minX & df$x<=maxX,]
             return(df)
         }
         ..find_rough_point<-function(df){
@@ -256,18 +269,20 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
         by <- (maxX - minX) / nPoints   # delta between points
         points <- ..gen_points(by)
         if (nrow(points)==0){
-            cat(sprintf("Cannot generate model value within the range [%d, %d]", minX, maxX))
+            cat(sprintf("Cannot generate model value within the range [%d, %d]\n", minX, maxX))
             return (NULL)
         }
         points <- points[order(points$y),]   # sort by y
         rough <- ..find_rough_point(points)
-        maxrange <- max(points$y) - min(points$y)
-        if (rough$diff> maxrange * 0.05){  # If the greatest diff is over 5% of maxrange, add more points
-            minX <- points[rough$idx,]$x - by*10
-            maxX <- points[rough$idx,]$x + by*10
-            by <- (maxX - minX) / nPoints # new delta between points
-            points2 <- ..gen_points(by)
-            points <- rbind(points, points2)
+        if (rough$diff*0.8 > by){
+            maxrange <- max(points$y) - min(points$y)
+            if (rough$diff> maxrange * 0.05){  # If the greatest diff is over 5% of maxrange, add more points
+                minX <- points[rough$idx,]$x - by*10
+                maxX <- points[rough$idx,]$x + by*10
+                by <- (maxX - minX) / nPoints # new delta between points
+                points2 <- ..gen_points(by)
+                points <- rbind(points, points2)
+            }
         }
 
         return (points)

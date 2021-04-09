@@ -153,24 +153,24 @@ cat(sprintf("\tSaved formula into %s\n", formulaPath))
 
 # Draw current model
 uncertainIDs <- get_base_names(names(md2$coefficients), isNum=TRUE)
-#draw_model(training, md2, TASK_INFO, uncertainIDs, modelBeforeFile)
-draw_model(training, md2, TASK_INFO, uncertainIDs, NULL)
+draw_model(training, md2, TASK_INFO, uncertainIDs, modelBeforeFile)
 
-# verification
-threshold <- find_noFPR(md2, training, precise=0.0001)  # lowest probability
-cat(sprintf("Probability: %.4f\n",threshold))
-for(taskID in uncertainIDs){
-    intercept <- get_intercepts(md2, threshold, taskID, TASK_INFO)
-    if (ncol(intercept)>=2 || is.infinite(intercept[1,1])==TRUE){
-        cat(sprintf("Intercepts: %s\n",namedDoubleArrayToStr(intercept)))
-        cat("\nNot applicable Phase 2 with the lowest probability\n\n")
-        threshold <- find_noFNR(md2, training, precise=0.0001)  # highest probability
-        draw_model(training, md2, TASK_INFO, uncertainIDs, modelErrorFile)
-        quit(status=1)
-    }else{
-        cat(sprintf("Intercepts: %s\n",namedDoubleArrayToStr(intercept)))
-    }
 
-}
+## verification
+#threshold <- find_noFPR(md2, training, precise=0.0001)  # lowest probability
+#cat(sprintf("Probability: %.4f\n",threshold))
+#for(taskID in uncertainIDs){
+#    intercept <- get_intercepts(md2, threshold, taskID, TASK_INFO)
+#    if (ncol(intercept)>=2 || is.infinite(intercept[1,1])==TRUE){
+#        cat(sprintf("Intercepts: %s\n",namedDoubleArrayToStr(intercept)))
+#        cat("\nNot applicable Phase 2 with the lowest probability\n\n")
+#        threshold <- find_noFNR(md2, training, precise=0.0001)  # highest probability
+#        draw_model(training, md2, TASK_INFO, uncertainIDs, modelErrorFile)
+#        quit(status=1)
+#    }else{
+#        cat(sprintf("Intercepts: %s\n",namedDoubleArrayToStr(intercept)))
+#    }
+#
+#}
 cat("Done.\n")
 
