@@ -116,11 +116,10 @@ if(balanceSide=="negative" && balanceRate<0.50){
     for(tID in uncertainIDs){
         df[sprintf("T%d",tID)] <- taskInfo$WCET.MAX[[tID]]
     }
+
     intercepts <- as.data.frame(df)  # ??
     intercepts <- get_intercepts(base_model, balanceProb, uncertainIDs)
     intercepts <- complement_intercepts(intercepts, uncertainIDs, taskInfo)
-
-
     #print(intercepts)
     training <- pruning(training, balanceSide, intercepts, uncertainIDs)
 
@@ -153,6 +152,6 @@ if(balanceSide=="negative" && balanceRate<0.50){
 # printing model into file
 draw_model(training, base_model, TASK_INFO, uncertainIDs, modelAfterFile)
 
-cat("Done.\n")
+cat("\nDone.\n")
 
 
