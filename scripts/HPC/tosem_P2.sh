@@ -61,5 +61,6 @@ if [[ "${JOB_NAME}" == "" ]]; then
 fi
 
 # phase 2--------------------------------
-TASK="java -Xms4G -Xmx${MEMORY}G -jar artifacts/SecondPhase.jar -b results/TOSEM_${CODE}/${SUBJECT}/Run{1} --nTerms 0 --useTest --nTest 1000 --cpus ${N_CPUS} ${ADDITIONAL_OPTIONS}"
-sbatch -J ${JOB_NAME} -N ${NUM_NODES} --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}_P2.log cmds/node_parallel.sh ${DRY_RUN} -s ${START_ID} -l ${LOG_OUTPUT}_P2 -r ${RUN_NUMS} ${TASK}
+TASK="java -Xms4G -Xmx${MEMORY}G -jar artifacts/SecondPhase.jar -b results/TOSEM_${CODE}/${SUBJECT}/Run{1} --nTest 1000 --cpus ${N_CPUS} ${ADDITIONAL_OPTIONS}"
+sbatch -C skylake -J ${JOB_NAME} -N ${NUM_NODES} --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}_P2.log cmds/node_parallel.sh ${DRY_RUN} -s ${START_ID} -l ${LOG_OUTPUT}_P2 -r ${RUN_NUMS} ${TASK}
+# -C skylake option can be assigned nodes from 109-168 to the job # requires to the second phase
