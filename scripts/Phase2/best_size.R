@@ -11,6 +11,7 @@ CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 #CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 #args <- c("results/TOSEM_20a/ICS/Run18", "_phase2/_samples/sample_best_size.md", 0.053600)
 setwd(CODE_PATH)
+suppressMessages(library(stringr))
 suppressMessages(library(neldermead))
 source("libs/lib_config.R")
 source("libs/lib_sampling.R")  # find_x_range
