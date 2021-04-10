@@ -353,11 +353,18 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
                 XID <- IDs[-idx]
                 fx <- generate_line_function(model, P, yID, taskInfo$WCET.MIN[yID], taskInfo$WCET.MAX[yID])
                 if (length(XID)==0){
-                    intercept <- fx(0)
+                    value <- fx(0)
                 }else{
-                    intercept <- fx(taskInfo$WCET.MIN[XID])
+                    value <- fx(taskInfo$WCET.MIN[XID])
                 }
-                items <- c(items, intercept)
+                # compliment the value
+                value <- value[value <= taskInfo$WCET.MAX[yID]]
+                value <- value[value >= taskInfo$WCET.MIN[yID]]
+                value <- min(value)
+                if (length(value)==0 || is.infinite(value)==TRUE){
+                    value <- taskInfo$WCET.MAX[yID]
+                }
+                items <- c(items, ceiling(value))
             }
             intercepts<-rbind(intercepts, t(items))
         }
@@ -366,38 +373,10 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
         return (intercepts)
     }
 
-
-    get_intercepts_old<-function(model, Plist, IDs){
-
-        cof<-model$coefficients
-        df<-data.frame()
-        for ( P in Plist){
-            # nItem <- data.frame()
-            nItem <- data.frame(t(rep(0, length(IDs))))
-            colnames(nItem) <- sprintf("T%d",IDs)
-            for (id in IDs){
-                idxInter<- 1    # constant
-                idx1<-..find_idx(cof, id, 1) # 1 dimen
-                idx2<-..find_idx(cof, id, 2) # 2 dimen
-                if(idx2!=0){
-                    constant <- as.double(cof[idxInter])-log(P/(1-P))
-                    value <- ..qSolver(cof[idx2], ifelse(idx1==0, 0, cof[idx1]), constant)[1]
-                }
-                else{
-                    value <- (log(P/(1-P))-cof[idxInter]) / cof[idx1]
-                }
-                nItem[sprintf("T%d",id)] <- value
-            }
-            df <- rbind(df, nItem)
-        }
-        rownames(df) <- Plist
-        return (df)
-    }
-
     #************************************************
     # complement intercepts: if there is nan or over the initial bound, we set initial bound
-    complement_intercepts <- function(intercepts, uncertainIDs, task_info){
-        for(tID in uncertainIDs){
+    complement_intercepts <- function(intercepts, taskIDs, task_info){
+        for(tID in taskIDs){
             tname <- sprintf("T%d",tID)
             if (is.nan(intercepts[1,tname])==TRUE){
                 intercepts[tname] <- task_info$WCET.MAX[[tID]]

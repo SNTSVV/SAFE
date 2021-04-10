@@ -42,18 +42,25 @@ if (!Sys.getenv("DEF_LIB_DATA", unset=FALSE)=="TRUE") {
     ########################################################
     #### load data and update UNIT and append labels
     ########################################################
-    update_data <- function(data, labels=NULL){
+    update_data <- function(data, labels=NULL, timeUnit=1){
         # change time unit
         names <- colnames(data)
         for (colname in names){
             if (startsWith(colname, "T") == FALSE) next
-            data[[colname]] <- data[[colname]]
+            data[[colname]] <- data[[colname]]*timeUnit
         }
         #Add label for result
         if (!is.null(labels)){
+            all <- nrow(data)
+            positive<-nrow(data[data$result==0,])
+            if (positive==all || positive==0){
+                pItem <- data.frame(result=as.integer(0), t(rep(-1, ncol(data)-1)))
+                nItem <- data.frame(result=as.integer(1), t(rep(-1, ncol(data)-1)))
+                pItem <- rbind(pItem, nItem)
+                colnames(pItem) <- colnames(data)
+                data <- rbind(data, pItem)
+            }
             data$labels <- factor(data$result, levels=c(0,1), labels=labels)
-            data$labels[data$result == 0] <- labels[1]
-            data$labels[data$result == 1] <- labels[2]
         }
 
         return (data)

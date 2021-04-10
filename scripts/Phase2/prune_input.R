@@ -105,26 +105,19 @@ cat(sprintf(":: Number of training data: %d (nPositive: %d, nNegative: %d)\n", n
 cat(sprintf(":: BalanceRate: %.2f, BalanceSide: %s, balanceProb: %.4f \n", balanceRate, balanceSide, balanceProb))
 
 
-uncertainIDs <- get_base_names(names(base_model$coefficients), isNum=TRUE)
+targetIDs <- get_base_names(names(base_model$coefficients), isNum=TRUE)
 
 ################################################################################
 # pruning
 if(balanceSide=="negative" && balanceRate<0.50){
     cat(":: Pruning... ")
     taskInfo <- data.frame(TASK_INFO)
-    df<-list()
-    for(tID in uncertainIDs){
-        df[sprintf("T%d",tID)] <- taskInfo$WCET.MAX[[tID]]
-    }
-
-    intercepts <- as.data.frame(df)  # ??
-    intercepts <- get_intercepts(base_model, balanceProb, uncertainIDs)
-    intercepts <- complement_intercepts(intercepts, uncertainIDs, taskInfo)
-    #print(intercepts)
-    training <- pruning(training, balanceSide, intercepts, uncertainIDs)
+    intercepts <- get_intercepts(base_model, balanceProb, targetIDs, taskInfo)
+    #intercepts <- complement_intercepts(intercepts, targetIDs, taskInfo)
+    training <- pruning(training, balanceSide, intercepts, targetIDs)
 
     # change input data
-    for (tID in uncertainIDs){
+    for (tID in targetIDs){
         tname <- sprintf("T%d", tID)
         taskInfo$WCET.MAX[[tID]] <- intercepts[1, tname]
         # print(sprintf("T%d=%d", tID, TASK_INFO$WCET.MAX[[tID]]))
@@ -150,7 +143,7 @@ if(balanceSide=="negative" && balanceRate<0.50){
 
 ################################################################################
 # printing model into file
-draw_model(training, base_model, TASK_INFO, uncertainIDs, modelAfterFile)
+draw_model(training, base_model, TASK_INFO, targetIDs, modelAfterFile)
 
 cat("\nDone.\n")
 

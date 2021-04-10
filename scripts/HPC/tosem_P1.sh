@@ -23,6 +23,7 @@ N_CPUS=1
 LOG_OUTPUT=""
 ADDITIONAL_OPTIONS=""
 START_ID=1
+NICKNAME=""
 
 # Parse the command-line argument
 while [ $# -ge 1 ]; do
@@ -30,6 +31,7 @@ while [ $# -ge 1 ]; do
         -h | --help) usage; exit 0;;
         -d | --noop | --dry-run) DRY_RUN="-d";;
         -N | --node) NUM_NODES=$2; shift;;
+        --nick) NICKNAME=$2; shift;;
         -m | --mem) MEMORY=$2; shift;;
         -r | --runs) RUN_NUMS=$2; shift;;
         --start) START_ID=$2; shift;;
@@ -62,5 +64,5 @@ fi
 
 
 # phase 1--------------------------------
-TASK="java -Xms4G -Xmx${MEMORY}G -jar artifacts/SAFERunner.jar -r ${RUN_NUMS} --runID {1} -b results/TOSEM_${CODE}/${SUBJECT} --data res/industrial_${CODE}/${SUBJECT}.csv --cpus ${N_CPUS} -i 1000 ${ADDITIONAL_OPTIONS}"
+TASK="java -Xms4G -Xmx${MEMORY}G -jar artifacts/SAFERunner.jar -r ${RUN_NUMS} --runID {1} -b results/TOSEM_${CODE}/${SUBJECT}${NICKNAME} --data res/industrial_${CODE}/${SUBJECT}.csv --cpus ${N_CPUS} -i 1000 ${ADDITIONAL_OPTIONS}"
 sbatch -J ${JOB_NAME} -N ${NUM_NODES} --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}_P1.log cmds/node_parallel.sh ${DRY_RUN} -s ${START_ID} -l ${LOG_OUTPUT}_P1 -r ${RUN_NUMS} ${TASK}
