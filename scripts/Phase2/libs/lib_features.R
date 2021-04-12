@@ -62,7 +62,7 @@ if (!Sys.getenv("DEF_LIB_FEATURES", unset=FALSE)=="TRUE") {
           theme(legend.justification=c(1,0), legend.position=c(1, 0), legend.title=element_blank(), plot.title=element_text(hjust = 0.5))+
           xlab("Task") +
           ylab("Relative importance")+
-          ylim(0, 0.8)+
+          ylim(0, 1)+
           ggtitle(sprintf("Relative Importance of Terms (nTree=%d, nDepth=%d)",nTree, nDepth))
         return (g)
     }

@@ -9,7 +9,8 @@ EXEC_PATH <- getwd()
 CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 #EXEC_PATH <- "~/projects/RTA_SAFE"
 #CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
-#args <- c("results/TOSEM_20a/ESAIL/Run01", "_phase2", 10, 20, 0.0010, "dist_sampling")
+#args <- c("results/TOSEM_40a/CCS/Run49", "_phase2/_samples/sample_0018.md", "_phase2/workdata.csv", 10, 20, 0.039200)
+
 setwd(CODE_PATH)
 suppressMessages(library(neldermead))
 source("libs/lib_config.R")

@@ -73,7 +73,7 @@ if (length(targetIDs)>=2){
 
     fx<-generate_line_function(model, probability, yID, TASK_INFO$WCET.MIN[yID], TASK_INFO$WCET.MAX[yID])
     xRange<- xRange <- find_x_range(TASK_INFO, fx, XID, training, 0.00)
-    bestPoint <- get_bestsize_point(fx, xRange, TASK_INFO, XID, yID)
+    bestPoint <- get_bestsize_point_multi(fx, xRange, TASK_INFO, XID, yID, try=10)
 }else{
     yID <- targetIDs[length(targetIDs)]
     XID <- c()

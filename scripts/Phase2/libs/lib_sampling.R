@@ -231,25 +231,15 @@ if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
     # select one example among candidates
     # generate a model line function
     generate_samples_by_distance<-function(taskInfo, model.fx, yID, XID, XRange, nSamples, nCandidates){
-        count <-0
-        errorCnt<-0
-        maxTry <- nSamples*2
         samples <- data.frame()
-
-        while(count < nSamples){
+        for (cnt in c(1:nSamples)) {
             candidates <- sample_by_random(nCandidates, taskInfo)
             sample <- ..select_based_euclid_distance_multi(candidates, model.fx, yID, XID, XRange)
             if (is.null(sample)){
-                errorCnt<- errorCnt+1
-                if (errorCnt>maxTry) break
-                next
+                select <- round(runif(1,1,nCandidates))
+                sample <- candidates[select,]
             }
             samples <- rbind(samples, sample)
-            count <- count+1
-        }
-        if (count < nSamples){
-            cat(sprintf("No candidates are available to find min distance (tried %d times)\n", maxTry))
-            return (samples)
         }
         return (samples)
     }
@@ -462,10 +452,7 @@ if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
             # find minimum distance in range (WCET.MIN, WCET.MAX) of the first points
             fmin <- NULL
             tryCatch({
-                # fminbnd in pracma (This function should be set an available range)
-                #v <- fminbnd(dist_func, x0=xRange$min, xmin=xRange$min, xmax=xRange$max)#TASK_INFO$WCET.MIN[[xID]]*UNIT, TASK_INFO$WCET.MAX[[xID]]*UNIT) #
-                #fmin <- v$fmin
-                # fminbnd in nelder-mead (should be given the ragne...)
+                # fminbnd in nelder-mead (should be given the range) (for multi dimensional)
                 opt <- optimset(MaxFunEvals=200)
                 nm <- fminbnd(dist_func, x0=XRange$min, xmin=XRange$min, xmax=XRange$max, options=opt)
                 fmin <- neldermead.get(this=nm, key="fopt")
@@ -480,7 +467,6 @@ if (!Sys.getenv("DEV_LIB_SAMPLING", unset=FALSE)=="TRUE") {
         }
 
         if (min_Index == 0){
-            #cat("No candidates are available to find min distance\n")
             return (NULL)
         }
         return (candidates[min_Index,])

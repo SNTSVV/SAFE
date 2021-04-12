@@ -255,15 +255,18 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
             maxDiffIdx <- 0
             for ( idx in 2:nrow(df)){
                 diff <- df$y[idx] - df$y[idx-1]
+                if (is.null(diff)==TRUE || is.nan(diff)==TRUE) next
                 if (diff>maxDiff){
                     maxDiff <- diff
                     maxDiffIdx <- idx
                 }
             }
+            if (maxDiff==0) return (NULL)
             ret <- list()
             ret[["idx"]] <- maxDiffIdx
             ret[["diff"]] <- maxDiff
             return (ret)
+
         }
 
         by <- (maxX - minX) / nPoints   # delta between points
@@ -274,7 +277,7 @@ if (!Sys.getenv("DEV_LIB_MODEL", unset=FALSE)=="TRUE") {
         }
         points <- points[order(points$y),]   # sort by y
         rough <- ..find_rough_point(points)
-        if (rough$diff*0.8 > by){
+        if (is.null(rough)==FALSE && rough$diff*0.8 > by){
             maxrange <- max(points$y) - min(points$y)
             if (rough$diff> maxrange * 0.05){  # If the greatest diff is over 5% of maxrange, add more points
                 minX <- points[rough$idx,]$x - by*10

@@ -48,24 +48,47 @@ if (!Sys.getenv("DEV_LIB_AREA", unset=FALSE)=="TRUE") {
     return (list(X=NULL, Y=NULL, Area=NULL))
   }
 
+  #############################################
+  # get bestsize point (multiple runs)
+  # nealder-mead algorithm does not give the same value (because of randomness0
+  # multiple tries are required
+  #############################################
+  get_bestsize_point_multi<-function(fun, XRange, taskInfo, xID, yID, try=10)
+  {
+    bestPoint <- list(X=NULL, Y=NULL, Area=NULL)
+    for (t in 1:try){
+      value <- get_bestsize_point(fun, XRange, taskInfo, xID, yID)
+      if (is.null(bestPoint$Area)==TRUE){
+        bestPoint <- value
+      }else{
+        if(is.null(value$Area)==FALSE && value$Area>bestPoint$Area){
+          bestPoint <- value
+        }
+      }
+    }
+    return (bestPoint)
+  }
+
   get_bestsize_point<-function(fun, XRange, taskInfo, xID, yID){
     minX <- taskInfo$WCET.MIN[xID]
     maxX <- taskInfo$WCET.MAX[xID]
     minY <- taskInfo$WCET.MIN[yID]
     maxY <- taskInfo$WCET.MAX[yID]
-    area_func <- function(X, y) {return (prod(X-minX) * (y-minY))}
+    filter_y<-function(y){
+      # fintering over y range
+      if (length(y)==1 && is.infinite(y)) return (NULL)
+      y<- y[y>=minY]
+      y<- y[y<=maxY]
+      if (length(y)==0) return (NULL)
+      return (max(y))
+    }
+    area_func <- function(X, y) { return (prod(X-minX) * (y-minY)) }
     area_adj_func <- function(X){
       y <- fun(X)
       #cat(sprintf("x:%f, y:%f", X, y))
-      if (length(y)==1 && is.infinite(y)){
-        return (0)
-      }
-      # filtering over y range
-      y<- y[y>=minY]
-      y<- y[y<=maxY]
-      if (length(y)==0) return (0)
+      y<-filter_y(y)
+      if (is.null(y)) return (0)
       area <- area_func(X, y)
-      area <- max(area)
       #cat(sprintf("==> area: %f", area))
       return (area * -1) # minimize nelder mead
     }
@@ -73,7 +96,7 @@ if (!Sys.getenv("DEV_LIB_AREA", unset=FALSE)=="TRUE") {
     # nelder-mead
     xmax <- NULL
     tryCatch({
-      opt <- optimset(MaxFunEvals=200)
+      opt <- optimset(MaxFunEvals=200, tolX=1)
       nm <- fminbnd(area_adj_func, x0=(XRange$min+XRange$max)/2, xmin=XRange$min, xmax=XRange$max, options=opt)
       xmax <- neldermead.get(this=nm, key="xopt")
     },error = function(e) {
@@ -82,17 +105,16 @@ if (!Sys.getenv("DEV_LIB_AREA", unset=FALSE)=="TRUE") {
 
     # return results
     if (is.null(xmax)==FALSE){
-      ymax <- fun(xmax)
-      ymax<- ymax[ymax>=minY]
-      ymax<- ymax[ymax<=maxY]
-      if(length(ymax)==0){
-        ymax<-NULL
+      ymax <- fun(xmax[,1])
+      ymax <- filter_y(ymax)
+      if (is.null(ymax)){
         area<-NULL
+      }else{
+        area <- round(area_func(xmax, ymax))
+        ymax <- round(ymax)
       }
-      else{
-        area <- area_func(xmax, ymax) # area_func(xmax)*-1
-      }
-      return (list(X=xmax[,1], Y=ymax, Area=area))
+      return (list(X=round(xmax[,1]), Y=ymax, Area=area))
+
     }
     return (list(X=NULL, Y=NULL, Area=NULL))
   }

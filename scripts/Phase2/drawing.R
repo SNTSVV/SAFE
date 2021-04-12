@@ -8,7 +8,8 @@ EXEC_PATH <- getwd()
 CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
 #EXEC_PATH <- '~/projects/RTA_SAFE'
 #CODE_PATH <- sprintf("%s/scripts/Phase2", EXEC_PATH)
-#args <- c("", "", "", "", "", "results/TOSEM2/ICS")
+#args <- c("results/TOSEM_90a/HPSS/Run01")
+
 
 setwd(CODE_PATH)
 source("libs/lib_config.R")

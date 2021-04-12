@@ -11,8 +11,10 @@ install.packages("MLmetrics", repos="https://cloud.r-project.org/")
 install.packages("randomForest", repos="https://cloud.r-project.org/")
 install.packages("neldermead", repos="https://cloud.r-project.org/")
 install.packages("stringr", repos="https://cloud.r-project.org/")
-install.packages("magrittr", repos="https://cloud.r-project.org/")   # dependency of stringr
 install.packages("cubature", repos="https://cloud.r-project.org/")
+
+install.packages("magrittr", repos="https://cloud.r-project.org/")   # dependency of stringr
+install.packages("rlang", repos="https://cloud.r-project.org/")   # dependency of stringr
 
 
 # for testing
