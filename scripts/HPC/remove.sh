@@ -35,7 +35,7 @@ if [ ! -d ${BASE_PATH} ]; then
     exit 1
 fi
 
-if [ ${REMOVE} == "" ]; then
+if [ "${REMOVE}" == "" ]; then
     echo "You need to give the name which is removed in the base path"
     usage
     exit 1

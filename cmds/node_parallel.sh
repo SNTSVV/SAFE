@@ -7,16 +7,17 @@
 #SBATCH --qos=normal
 #SBATCH --partition=batch
 #SBATCH --mem-per-cpu=4G             # Stick to maximum size of memory
-#SBATCH -N 1                  # Stick to a single node
+# SBATCH -N 1                  # Stick to a single node
 ### -c, --cpus-per-task=<ncpus> if your application is using multithreading, increase the number of cpus(cores), otherwise just use 1
 #SBATCH -c 1
 ###     /!\ Adapt '--ntasks-per-node' above accordingly
 #SBATCH --ntasks-per-node 1
-##SBATCH -o %x-%j.out          # Logfile: <jobname>-<jobid>.out
+###### default options
+#SBATCH -o logs/%x-%j.out          # Logfile: <jobname>-<jobid>.out
+#SBATCH -e logs/%x-%j.out          # Logfile: <jobname>-<jobid>.out
 #
 
 
-# Time-stamp: <Wed 2019-12-11 14:22 svarrette>
 #############################################################################
 # Slurm launcher for embarrassingly parallel problems combining srun and GNU
 # parallel within a single node to runs multiple times the command ${TASK}
@@ -136,6 +137,7 @@ CMD_PREFIX=
 TASK="stress --cpu ${SLURM_CPUS_PER_TASK:=1} --timeout 60s --vm-hang"  ## Test code
 RUN_NUMS=1
 START_RUN_ID=1
+RUNLIST=
 # Parse the command-line argument
 while [ $# -ge 1 ]; do
     case $1 in
@@ -143,6 +145,7 @@ while [ $# -ge 1 ]; do
         -d | --noop | --dry-run) CMD_PREFIX=echo;;
         -s | --start) START_RUN_ID=$2; shift;;
         -r | --runNum) RUN_NUMS=$2; shift;;
+        --list) RUNLIST=$2; shift;;
         -l | --log) LOG_OUTPUT=$2; shift;;
         *) TASK="$*"; break; ;;
     esac
@@ -178,11 +181,15 @@ PARALLEL="parallel --delay .2 -j ${SLURM_NTASKS} --joblog ${LOG_OUTPUT}_parallel
 # create a list of run IDs (list of string with delimiter ' ')
 # if we use variable in PARALLEL command, it doesn't work with {x..y} notation
 #END_RUN_ID=`expr $START_RUN_ID + $SLURM_NTASKS - 1`   # set END run ID
-RUN_IDS=""
-for ((runID=$START_RUN_ID; runID<=${RUN_NUMS}; runID++)); do
-  var=$(printf '%02d' "${runID}")
-  RUN_IDS="${RUN_IDS} ${var}"
-done
+if [ "${RUNLIST}" == "" ]; then
+  RUN_IDS=""
+  for ((runID=$START_RUN_ID; runID<=${RUN_NUMS}; runID++)); do
+    var=$(printf '%02d' "${runID}")
+    RUN_IDS="${RUN_IDS} ${var}"
+  done
+else
+  RUN_IDS=$(echo ${RUNLIST} | sed "s/,/ /g")
+fi
 
 # Execute parallel works!
 start

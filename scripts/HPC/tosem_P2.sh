@@ -15,7 +15,7 @@ fi
 # concatenate parameters
 DRY_RUN=
 JOB_NAME=""
-NUM_NODES=1
+NUM_JOBS=1
 MEMORY=4
 CODE=""
 SUBJECT=""
@@ -24,18 +24,20 @@ LOG_OUTPUT=""
 ADDITIONAL_OPTIONS=""
 START_ID=1
 DEPENDENCY=
+NICKNAME=
 
 # Parse the command-line argument
 while [ $# -ge 1 ]; do
     case $1 in
         -h | --help) usage; exit 0;;
         -d | --noop | --dry-run) DRY_RUN="-d";;
-        -N | --node) NUM_NODES=$2; shift;;
+        -N | --jobs) NUM_JOBS=$2; shift;;
         -m | --mem) MEMORY=$2; shift;;
         -r | --runs) RUN_NUMS=$2; shift;;
         --start) START_ID=$2; shift;;
         -l | --log) LOG_OUTPUT=$2; shift;;
         -c | --code) CODE=$2; shift;;
+        --nick) NICKNAME=$2; shift;;
         -s | --subject) SUBJECT=$2; shift;;
         -p | --cpus) N_CPUS=$2; shift;;
         -j | --jobname) JOB_NAME=$2; shift;;
@@ -59,14 +61,14 @@ fi
 
 ##
 if [[ "${JOB_NAME}" == "" ]]; then
-  JOB_NAME=P2_${SUBJECT}_${CODE}
+  JOB_NAME=P2_${SUBJECT}_${CODE}${NICKNAME}
 fi
 
 # phase 2--------------------------------
-TASK="java -Xms4G -Xmx${MEMORY}G -jar artifacts/SecondPhase.jar -b results/TOSEM_${CODE}/${SUBJECT}/Run{1} --nTest 1000 --cpus ${N_CPUS} ${ADDITIONAL_OPTIONS}"
-if [ ${DEPENDENCY} == "" ]; then
-  sbatch -C skylake -J ${JOB_NAME} -N ${NUM_NODES} --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}_P2.log cmds/node_parallel.sh ${DRY_RUN} -s ${START_ID} -l ${LOG_OUTPUT}_P2 -r ${RUN_NUMS} ${TASK}
+TASK="java -Xms4G -Xmx${MEMORY}G -jar artifacts/SecondPhase.jar -b results/TOSEM_${CODE}/${SUBJECT}${NICKNAME}/Run{1} --nTest 1000 --cpus ${N_CPUS} ${ADDITIONAL_OPTIONS}"
+if [ "${DEPENDENCY}" == "" ]; then
+  sbatch -C skylake -J ${JOB_NAME} --ntasks-per-node ${NUM_JOBS}  --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}.log cmds/node_parallel.sh ${DRY_RUN} -s ${START_ID} -l ${LOG_OUTPUT} -r ${RUN_NUMS} ${TASK}
 else
-  sbatch -C skylake -J ${JOB_NAME} -N ${NUM_NODES} -d afterok:${DEPENDENCY} --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}_P2.log cmds/node_parallel.sh ${DRY_RUN} -s ${START_ID} -l ${LOG_OUTPUT}_P2 -r ${RUN_NUMS} ${TASK}
+  sbatch -C skylake -J ${JOB_NAME} --ntasks-per-node ${NUM_JOBS}  -d afterok:${DEPENDENCY} --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}_P2.log cmds/node_parallel.sh ${DRY_RUN} -s ${START_ID} -l ${LOG_OUTPUT}_P2 -r ${RUN_NUMS} ${TASK}
 fi
-# -C skylake option can be assigned nodes from 109-168 to the job # requires to the second phase
+# -C skylake option make your job to be assigned nodes from 109-168
