@@ -13,8 +13,8 @@
 ###     /!\ Adapt '--ntasks-per-node' above accordingly
 #SBATCH --ntasks-per-node 1
 ###### default options
-#SBATCH -o logs/%x-%j.out          # Logfile: <jobname>-<jobid>.out
-#SBATCH -e logs/%x-%j.out          # Logfile: <jobname>-<jobid>.out
+##SBATCH -o logs/%x-%j.out          # Logfile: <jobname>-<jobid>.out
+##SBATCH -e logs/%x-%j.out          # Logfile: <jobname>-<jobid>.out
 #
 
 

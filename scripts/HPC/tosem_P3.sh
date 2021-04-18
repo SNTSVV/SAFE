@@ -46,6 +46,21 @@ while [ $# -ge 1 ]; do
     esac
     shift;
 done
+#
+#echo "----------------input ---------------"
+#echo ${DRY_RUN}
+#echo ${JOB_NAME}
+#echo ${NUM_JOBS}
+#echo ${MEMORY}
+#echo ${CODE}
+#echo ${SUBJECT}
+#echo ${N_CPUS}
+#echo ${LOG_OUTPUT}
+#echo ${ADDITIONAL_OPTIONS}
+#echo ${START_ID}
+#echo ${DEPENDENCY}
+#echo ${NICKNAME}
+
 
 #######################
 # Create logs directory
