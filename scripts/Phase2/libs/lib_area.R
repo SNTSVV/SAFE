@@ -110,10 +110,10 @@ if (!Sys.getenv("DEV_LIB_AREA", unset=FALSE)=="TRUE") {
       if (is.null(ymax)){
         area<-NULL
       }else{
-        area <- round(area_func(xmax, ymax))
-        ymax <- round(ymax)
+        area <- area_func(xmax, ymax)
+        ymax <- ymax
       }
-      return (list(X=round(xmax[,1]), Y=ymax, Area=area))
+      return (list(X=xmax[,1], Y=ymax, Area=area))
 
     }
     return (list(X=NULL, Y=NULL, Area=NULL))
