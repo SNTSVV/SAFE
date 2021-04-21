@@ -118,7 +118,7 @@ if (!Sys.getenv("DEV_LIB_AREA", unset=FALSE)=="TRUE") {
     # return results
     if (is.null(xmax)==FALSE){
       ymax <- fun(xmax[,1])
-      ymax <- filter_y(ymax)
+      ymax <- filter_y(ymax, minY, maxY)
       if (is.null(ymax)){
         area<-NULL
       }else{
