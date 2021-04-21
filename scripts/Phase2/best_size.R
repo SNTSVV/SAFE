@@ -79,8 +79,7 @@ if (length(targetIDs)>=2){
     XID <- c()
 
     fx<-generate_line_function(model, probability, yID, TASK_INFO$WCET.MIN[yID], TASK_INFO$WCET.MAX[yID])
-    value <- fx(TASK_INFO$WCET.MIN[XID])
-    bestPoint <- list(X=NULL, Y=value, Area=value)
+    bestPoint <- get_bestsize_point_singleD(fx, TASK_INFO, XID, yID)
 }
 
 },error = function(e) {

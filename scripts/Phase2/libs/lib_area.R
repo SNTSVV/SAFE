@@ -69,24 +69,36 @@ if (!Sys.getenv("DEV_LIB_AREA", unset=FALSE)=="TRUE") {
     return (bestPoint)
   }
 
+  get_bestsize_point_singleD <- function(fx, taskInfo, xID, yID){
+    minY <- taskInfo$WCET.MIN[yID]
+    maxY <- taskInfo$WCET.MAX[yID]
+
+    y <- fx(taskInfo$WCET.MIN[xID])
+    y <- filter_y(y, minY, maxY)
+    bestPoint <- list(X=NULL, Y=y, Area=y)
+    return (bestPoint)
+  }
+
+  filter_y<-function(y, minY, maxY){
+    # fintering over y range
+    if (length(y)==1 && is.infinite(y)) return (NULL)
+    y<- y[y>=minY]
+    y<- y[y<=maxY]
+    if (length(y)==0) return (NULL)
+    return (max(y))
+  }
+
   get_bestsize_point<-function(fun, XRange, taskInfo, xID, yID){
     minX <- taskInfo$WCET.MIN[xID]
     maxX <- taskInfo$WCET.MAX[xID]
     minY <- taskInfo$WCET.MIN[yID]
     maxY <- taskInfo$WCET.MAX[yID]
-    filter_y<-function(y){
-      # fintering over y range
-      if (length(y)==1 && is.infinite(y)) return (NULL)
-      y<- y[y>=minY]
-      y<- y[y<=maxY]
-      if (length(y)==0) return (NULL)
-      return (max(y))
-    }
+
     area_func <- function(X, y) { return (prod(X-minX) * (y-minY)) }
     area_adj_func <- function(X){
       y <- fun(X)
       #cat(sprintf("x:%f, y:%f", X, y))
-      y<-filter_y(y)
+      y<-filter_y(y, minY, maxY)
       if (is.null(y)) return (0)
       area <- area_func(X, y)
       #cat(sprintf("==> area: %f", area))
