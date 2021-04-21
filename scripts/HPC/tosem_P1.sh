@@ -61,7 +61,7 @@ fi
 
 ##
 if [[ "${JOB_NAME}" == "" ]]; then
-  JOB_NAME=P1_${SUBJECT}_${CODE}
+  JOB_NAME=P1${NICKNAME}_${SUBJECT}_${CODE}
 fi
 
 if [ "${RUNLIST}" == "" ]; then

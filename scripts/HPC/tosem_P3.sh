@@ -25,6 +25,7 @@ ADDITIONAL_OPTIONS=""
 START_ID=1
 DEPENDENCY=
 NICKNAME=
+RUNLIST=
 
 # Parse the command-line argument
 while [ $# -ge 1 ]; do
@@ -38,6 +39,7 @@ while [ $# -ge 1 ]; do
         -l | --log) LOG_OUTPUT=$2; shift;;
         -c | --code) CODE=$2; shift;;
         --nick) NICKNAME=$2; shift;;
+        --list) RUNLIST=$2; shift;;
         -s | --subject) SUBJECT=$2; shift;;
         -p | --cpus) N_CPUS=$2; shift;;
         -j | --jobname) JOB_NAME=$2; shift;;
@@ -48,19 +50,20 @@ while [ $# -ge 1 ]; do
 done
 #
 #echo "----------------input ---------------"
-#echo ${DRY_RUN}
-#echo ${JOB_NAME}
-#echo ${NUM_JOBS}
-#echo ${MEMORY}
-#echo ${CODE}
-#echo ${SUBJECT}
-#echo ${N_CPUS}
-#echo ${LOG_OUTPUT}
-#echo ${ADDITIONAL_OPTIONS}
-#echo ${START_ID}
-#echo ${DEPENDENCY}
-#echo ${NICKNAME}
-
+#echo "DRY_RUN             =${DRY_RUN}"
+#echo "JOB_NAME            =${JOB_NAME}"
+#echo "NUM_JOBS            =${NUM_JOBS}"
+#echo "MEMORY              =${MEMORY}"
+#echo "CODE                =${CODE}"
+#echo "SUBJECT             =${SUBJECT}"
+#echo "N_CPUS              =${N_CPUS}"
+#echo "LOG_OUTPUT          =${LOG_OUTPUT}"
+#echo "ADDITIONAL_OPTIONS  =${ADDITIONAL_OPTIONS}"
+#echo "START_ID            =${START_ID}"
+#echo "DEPENDENCY          =${DEPENDENCY}"
+#echo "NICKNAME            =${NICKNAME}"
+#echo "RUNLIST             =${RUNLIST}"
+#
 
 #######################
 # Create logs directory
@@ -76,14 +79,22 @@ fi
 
 ##
 if [[ "${JOB_NAME}" == "" ]]; then
-  JOB_NAME=RT_${SUBJECT}_${CODE}${NICKNAME}
+  JOB_NAME=RT${NICKNAME}_${SUBJECT}_${CODE}
+fi
+
+if [ "${RUNLIST}" == "" ]; then
+  RUNLIST=""
+else
+  RUNLIST="--list ${RUNLIST}"
+  RUN_NUMS=1
+  START_ID=1
 fi
 
 # phase 2--------------------------------
 TASK="java -Xms4G -Xmx${MEMORY}G -jar artifacts/RoundTrip.jar -b results/TOSEM_${CODE}/${SUBJECT}${NICKNAME}/Run{1} --nTest 1000 --cpus ${N_CPUS} ${ADDITIONAL_OPTIONS}"
 if [ "${DEPENDENCY}" == "" ]; then
-  sbatch -J ${JOB_NAME} --ntasks-per-node ${NUM_JOBS}  --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}.log cmds/node_parallel.sh ${DRY_RUN} -s ${START_ID} -l ${LOG_OUTPUT} -r ${RUN_NUMS} ${TASK}
+  sbatch -J ${JOB_NAME} --ntasks-per-node ${NUM_JOBS}  --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}.log cmds/node_parallel.sh ${DRY_RUN} ${RUNLIST} -s ${START_ID} -l ${LOG_OUTPUT} -r ${RUN_NUMS} ${TASK}
 else
-  sbatch -J ${JOB_NAME} --ntasks-per-node ${NUM_JOBS}  -d afterok:${DEPENDENCY} --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}_P2.log cmds/node_parallel.sh ${DRY_RUN} -s ${START_ID} -l ${LOG_OUTPUT}_P2 -r ${RUN_NUMS} ${TASK}
+  sbatch -J ${JOB_NAME} --ntasks-per-node ${NUM_JOBS}  -d afterok:${DEPENDENCY} --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}_P2.log cmds/node_parallel.sh ${DRY_RUN} ${RUNLIST} -s ${START_ID} -l ${LOG_OUTPUT}_P2 -r ${RUN_NUMS} ${TASK}
 fi
 # -C skylake option make your job to be assigned nodes from 109-168
