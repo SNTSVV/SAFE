@@ -84,7 +84,7 @@ def run(tpath):
     for fname in filelist:
         if fname.endswith(".out") is False: continue
         if fname.rfind("out", 0, len(fname)-4) <0: continue
-        print "%s: "%(fname),    # python2 compatable
+        print("%s: "%(fname), end="")    # python2 compatable
         diff = get_timeinfo(os.path.join(target, fname))
         print("%d (%dh)"%(diff, diff/3600))
         sumTS += diff
