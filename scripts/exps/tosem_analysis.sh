@@ -126,7 +126,8 @@ Rscript scripts/graphs/DrawingRQ3.R results/TOSEM_mix/_analysis4/EXP3 ADCS,ICS,U
 
 Rscript scripts/graphs/DrawingTable.R results/TOSEM_mix/_analysis4/EXP1 ADCS,ICS,UAV
 
-Rscript scripts/graphs/DrawingTable.R results/TOSEM_mix/_analysis_dist3/EXP1 ADCS,ICS,UAV
+Rscript scripts/graphs/DrawingTable.R results/TOSEM_mix/_analysis/EXP1 ADCS,ICS,UAV
+Rscript scripts/graphs/DrawingRQ2.R results/TOSEM_mix/_analysis/EXP2 ADCS,ICS,UAV
 
 tar -czf raw_paper_20210719/ADCS_Baseline.tar.gz ADCS_Baseline
 tar -czf raw_paper_20210719/ICS_Baseline.tar.gz ICS_Baseline

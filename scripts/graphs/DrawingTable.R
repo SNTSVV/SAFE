@@ -36,11 +36,8 @@ print(sprintf("CODE_BASE : %s", ENV$CODE_BASE))
 print(sprintf("PARAMS    : %s", ENV$PARAMS))
 
 setwd(ENV$CODE_BASE)
-suppressMessages(library(ggplot2))
 suppressMessages(library(dplyr))
 suppressMessages(library(effsize))
-suppressMessages(library(latex2exp))
-suppressMessages(library(gridExtra))
 source("lib_data.R")
 setwd(ENV$BASE)
 

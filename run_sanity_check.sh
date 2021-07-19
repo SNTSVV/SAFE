@@ -10,7 +10,7 @@
 # --quanta: time unit for one tick of SafeScheduler (TIME_QUANTA in settings.json)
 for ((runID=1; runID<=NUM_RUNS; runID++)); do
 	runName=$(printf 'Run%02d' "${runID}")
-	java -Xms1G -Xmx8G -jar artifacts/SafeSearch.jar -b results/Check/ADCS_SAFE/${runName} --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 -w1 _phase1
+	java -Xms1G -Xmx8G -jar artifacts/SafeSearch.jar -b results/SanityCheck/ADCS_SAFE/${runName} --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 -w1 _phase1
 done
 
 
@@ -19,5 +19,5 @@ done
 # -i: number of iteration of SafeSearch (GA_ITERATION in settings.json)
 for ((runID=1; runID<=NUM_RUNS; runID++)); do
 	runName=$(printf 'Run%02d' "${runID}")
-	java -Xms1G -Xmx8G -jar artifacts/SafeSearch.jar -b results/Check/ADCS_Random/${runName} --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 -w1 _phase1 --simpleSearch -i 1000
+	java -Xms1G -Xmx8G -jar artifacts/SafeSearch.jar -b results/SanityCheck/ADCS_Random/${runName} --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 -w1 _phase1 --simpleSearch -i 1000
 done
