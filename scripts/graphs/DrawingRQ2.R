@@ -71,7 +71,7 @@ if (file.exists(OUTPUT_PATH)==FALSE){ dir.create(OUTPUT_PATH, recursive = TRUE) 
         for(appr in APPROACHES) {
             dataFile <- sprintf("%s/test_%s_%s.csv", BASE_PATH, subject, appr)
             item <- read.csv(dataFile, header=TRUE)
-            data <- rbind(data, data.frame(Subject=subject, Approach=appr, nUpdate=item$nUpdate, Prec=item$Prec, Recall=item$Rec))
+            data <- rbind(data, data.frame(Subject=subject, Approach=appr, nUpdate=item$nUpdate, Run=item$Run, Prec=item$Prec, Recall=item$Rec))
         }
     }
     data$Approach <- change_factor_names(data$Approach, APPROACHES, APPR_NAMES)

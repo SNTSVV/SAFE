@@ -30,7 +30,7 @@ getENV<-function(codeBase=NULL){
     return (env)
 }
 ENV<-getENV("scripts/graphs")   # the codeBase parameter is for debug, when this script execute by RScript it will be ignored
-# ENV$PARAMS<- c("results/TOSEM/_analysis3/EXP1")
+# ENV$PARAMS<- c("results/TOSEM/_analysis/EXP1")
 print(sprintf("WORK_PATH : %s", ENV$BASE))
 print(sprintf("FILE      : %s", ENV$FILE))
 print(sprintf("CODE_BASE : %s", ENV$CODE_BASE))
