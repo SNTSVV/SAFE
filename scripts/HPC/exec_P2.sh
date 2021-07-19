@@ -1,5 +1,4 @@
 #!/bin/bash -l
-source ./scripts/HPC/library.sh
 
 ##############################################################################
 ##############################################################################
@@ -18,14 +17,15 @@ JOB_NAME=""
 NUM_JOBS=1
 MEMORY=4
 CODE=""
-SUBJECT=""
-N_CPUS=1
+TARGET=""
 LOG_OUTPUT=""
 ADDITIONAL_OPTIONS=""
 START_ID=1
 DEPENDENCY=
-NICKNAME=
 RUNLIST=
+NICK=
+LOCAL=0
+TIME=
 
 # Parse the command-line argument
 while [ $# -ge 1 ]; do
@@ -38,37 +38,22 @@ while [ $# -ge 1 ]; do
         --start) START_ID=$2; shift;;
         -l | --log) LOG_OUTPUT=$2; shift;;
         -c | --code) CODE=$2; shift;;
-        --nick) NICKNAME=$2; shift;;
         --list) RUNLIST=$2; shift;;
-        -s | --subject) SUBJECT=$2; shift;;
-        -p | --cpus) N_CPUS=$2; shift;;
+        -t | --target) TARGET=$2; shift;;
         -j | --jobname) JOB_NAME=$2; shift;;
+        --local) LOCAL=1;;
+        --nick) NICK=$2; shift;;
+        --time) TIME=$2; shift;;
         --dependency) DEPENDENCY=$2; shift;;
         *) ADDITIONAL_OPTIONS="$*"; break; ;;
     esac
     shift;
 done
-#
-#echo "----------------input ---------------"
-#echo "DRY_RUN             =${DRY_RUN}"
-#echo "JOB_NAME            =${JOB_NAME}"
-#echo "NUM_JOBS            =${NUM_JOBS}"
-#echo "MEMORY              =${MEMORY}"
-#echo "CODE                =${CODE}"
-#echo "SUBJECT             =${SUBJECT}"
-#echo "N_CPUS              =${N_CPUS}"
-#echo "LOG_OUTPUT          =${LOG_OUTPUT}"
-#echo "ADDITIONAL_OPTIONS  =${ADDITIONAL_OPTIONS}"
-#echo "START_ID            =${START_ID}"
-#echo "DEPENDENCY          =${DEPENDENCY}"
-#echo "NICKNAME            =${NICKNAME}"
-#echo "RUNLIST             =${RUNLIST}"
-#
 
 #######################
 # Create logs directory
 if [[ "${LOG_OUTPUT}" == "" ]]; then
-  parentPath=logs/TOSEM_${CODE}/${SUBJECT}/
+  parentPath=logs/${CODE}/${TARGET}
   mkdir -p ${parentPath}
   LOG_OUTPUT=${parentPath}/%j-%x
 else
@@ -79,7 +64,7 @@ fi
 
 ##
 if [[ "${JOB_NAME}" == "" ]]; then
-  JOB_NAME=RT${NICKNAME}_${SUBJECT}_${CODE}
+  JOB_NAME=P2_${TARGET}_${NICK}
 fi
 
 if [ "${RUNLIST}" == "" ]; then
@@ -91,10 +76,23 @@ else
 fi
 
 # phase 2--------------------------------
-TASK="java -Xms4G -Xmx${MEMORY}G -jar artifacts/RoundTrip.jar -b results/TOSEM_${CODE}/${SUBJECT}${NICKNAME}/Run{1} --nTest 1000 --cpus ${N_CPUS} ${ADDITIONAL_OPTIONS}"
-if [ "${DEPENDENCY}" == "" ]; then
-  sbatch -J ${JOB_NAME} --ntasks-per-node ${NUM_JOBS}  --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}.log cmds/node_parallel.sh ${DRY_RUN} ${RUNLIST} -s ${START_ID} -l ${LOG_OUTPUT} -r ${RUN_NUMS} ${TASK}
-else
-  sbatch -J ${JOB_NAME} --ntasks-per-node ${NUM_JOBS}  -d afterok:${DEPENDENCY} --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}_P2.log cmds/node_parallel.sh ${DRY_RUN} ${RUNLIST} -s ${START_ID} -l ${LOG_OUTPUT}_P2 -r ${RUN_NUMS} ${TASK}
-fi
 # -C skylake option make your job to be assigned nodes from 109-168
+HPCCMD="sbatch -C skylake -J ${JOB_NAME} --ntasks-per-node ${NUM_JOBS} --mem-per-cpu=${MEMORY}G -o ${LOG_OUTPUT}.log"
+PARALLEL_CMD="scripts/HPC/node_parallel.sh ${DRY_RUN} ${RUNLIST} -s ${START_ID} -l ${LOG_OUTPUT} -r ${RUN_NUMS}"
+TASK="java -Xms1G -Xmx${MEMORY}G -jar artifacts/SafeRefinement.jar -b results/${CODE}/${TARGET}/Run{1} ${ADDITIONAL_OPTIONS}"
+if [ "${DEPENDENCY}" != "" ]; then
+  HPCCMD="${HPCCMD} -d afterok:${DEPENDENCY}"
+fi
+
+
+if [ "${TIME}" != "" ]; then
+  HPCCMD="${HPCCMD} -t ${TIME}"
+fi
+if [ "${LOCAL}" == "1" ]; then
+  HPCCMD=""
+  PARALLEL_CMD=""
+  if [ "${DRY_RUN}" != "" ]; then
+    HPCCMD="echo"
+  fi
+fi
+${HPCCMD} ${PARALLEL_CMD} ${TASK}
