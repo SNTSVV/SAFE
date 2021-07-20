@@ -15,6 +15,15 @@ META-INF/
 *.log.*
 
 ############################
+## script settings
+############################
+.Rhistory
+*.pyc
+__pycache__
+.DS_Store
+.Rproj.user
+
+############################
 ## log files
 ############################
 *.tsv
@@ -25,3 +34,6 @@ META-INF/
 ############################
 logs/
 venv/
+results/
+res/backup
+artifacts/scripts

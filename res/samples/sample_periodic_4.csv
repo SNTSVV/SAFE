@@ -1,0 +1,5 @@
+TaskID,Task Name,Task Type,Priority,Offset,Min Budgeted WCET (ms),Max Budgeted WCET (ms),Period,Min Inter-arrival-time (ms),Max Inter-arrival-time (ms),Task Deadline,DaedlineType
+1,Test1,Periodic,53,0,1,1,5,,,5,HARD
+2,Test2,Periodic,52,0,1,1,5,,,5,HARD
+3,Test3,Periodic,51,0,1,1,5,,,5,HARD
+4,Test3,Periodic,50,0,1,1,5,,,5,HARD
