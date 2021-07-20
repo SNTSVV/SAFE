@@ -6,91 +6,92 @@
 # SAFE Execution
 #############################################################################
 # ICS - Phase 1
-./scripts/HPC/exec_P1.sh --time 01:00:00 --nick mix -m 8 -N 10 -r 50 -c TOSEM -t ICS_SAFE --data res/industrial/ICS_20a.csv --cpus 3 --quanta 0.01 --max 0
+./scripts/HPC/exec_P1.sh --time 01:00:00 -m 8 -N 10 -r 50 -c TOSEM -t ICS_SAFE --data res/industrial/ICS_20a.csv --cpus 3 --quanta 0.01 --max 0
 
 # ICS - Phase 2
-./scripts/HPC/exec_P2.sh --time 2:00:00 --nick mix -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ICS_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
-./scripts/HPC/exec_P2.sh --time 2:00:00 --nick mix -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ICS_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
-./scripts/HPC/exec_P2.sh --time 2:00:00 --nick mix -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ICS_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
-./scripts/HPC/exec_P2.sh --time 2:00:00 --nick mix -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ICS_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
-./scripts/HPC/exec_P2.sh --time 2:00:00 --nick mix -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ICS_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
+./scripts/HPC/exec_P2.sh --time 2:00:00 -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ICS_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
+./scripts/HPC/exec_P2.sh --time 2:00:00 -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ICS_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
+./scripts/HPC/exec_P2.sh --time 2:00:00 -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ICS_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
+./scripts/HPC/exec_P2.sh --time 2:00:00 -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ICS_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
+./scripts/HPC/exec_P2.sh --time 2:00:00 -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ICS_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
 
 # UAV - Phase 1
-./scripts/HPC/exec_P1.sh --time 02:00:00 --nick mix -m 8 -N 10 -r 50 -c TOSEM -t UAV_SAFE --data res/industrial/UAV_50a.csv --cpus 3 --quanta 0.01 --max 0
+./scripts/HPC/exec_P1.sh --time 02:00:00 -m 8 -N 10 -r 50 -c TOSEM -t UAV_SAFE --data res/industrial/UAV_50a.csv --cpus 3 --quanta 0.01 --max 0
 # UAV - Phase 2
-./scripts/HPC/exec_P2.sh --time 2:00:00 --nick mix -m 8 -N 10 --start  1 -r 10 -c TOSEM -t UAV_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
-./scripts/HPC/exec_P2.sh --time 2:00:00 --nick mix -m 8 -N 10 --start 11 -r 20 -c TOSEM -t UAV_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
-./scripts/HPC/exec_P2.sh --time 2:00:00 --nick mix -m 8 -N 10 --start 21 -r 30 -c TOSEM -t UAV_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
-./scripts/HPC/exec_P2.sh --time 2:00:00 --nick mix -m 8 -N 10 --start 31 -r 40 -c TOSEM -t UAV_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
-./scripts/HPC/exec_P2.sh --time 2:00:00 --nick mix -m 8 -N 10 --start 41 -r 50 -c TOSEM -t UAV_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
+./scripts/HPC/exec_P2.sh --time 2:00:00 -m 8 -N 10 --start  1 -r 10 -c TOSEM -t UAV_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
+./scripts/HPC/exec_P2.sh --time 2:00:00 -m 8 -N 10 --start 11 -r 20 -c TOSEM -t UAV_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
+./scripts/HPC/exec_P2.sh --time 2:00:00 -m 8 -N 10 --start 21 -r 30 -c TOSEM -t UAV_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
+./scripts/HPC/exec_P2.sh --time 2:00:00 -m 8 -N 10 --start 31 -r 40 -c TOSEM -t UAV_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
+./scripts/HPC/exec_P2.sh --time 2:00:00 -m 8 -N 10 --start 41 -r 50 -c TOSEM -t UAV_SAFE  --cpus 3 --max 0 --quanta 0.01 --preFeatures --prePrune
 
 # ADCS Phase 1 (T30 Large dealine)
-./scripts/HPC/exec_P1.sh --time 1-15:00:00 --nick mix -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ADCS_SAFE --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1
-./scripts/HPC/exec_P1.sh --time 1-15:00:00 --nick mix -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ADCS_SAFE --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1
-./scripts/HPC/exec_P1.sh --time 1-15:00:00 --nick mix -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ADCS_SAFE --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1
-./scripts/HPC/exec_P1.sh --time 1-15:00:00 --nick mix -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ADCS_SAFE --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1
-./scripts/HPC/exec_P1.sh --time 1-15:00:00 --nick mix -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ADCS_SAFE --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1
+./scripts/HPC/exec_P1.sh --time 1-15:00:00 -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ADCS_SAFE --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1
+./scripts/HPC/exec_P1.sh --time 1-15:00:00 -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ADCS_SAFE --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1
+./scripts/HPC/exec_P1.sh --time 1-15:00:00 -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ADCS_SAFE --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1
+./scripts/HPC/exec_P1.sh --time 1-15:00:00 -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ADCS_SAFE --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1
+./scripts/HPC/exec_P1.sh --time 1-15:00:00 -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ADCS_SAFE --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1
+
 # ADCS Phase 2
-./scripts/HPC/exec_P2.sh --nick mix -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --prePrune --preFeatures
-./scripts/HPC/exec_P2.sh --nick mix -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --prePrune --preFeatures
-./scripts/HPC/exec_P2.sh --nick mix -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --prePrune --preFeatures
-./scripts/HPC/exec_P2.sh --nick mix -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --prePrune --preFeatures
-./scripts/HPC/exec_P2.sh --nick mix -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --prePrune --preFeatures
+./scripts/HPC/exec_P2.sh --time 1-10:00:00 -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --prePrune --preFeatures
+./scripts/HPC/exec_P2.sh --time 1-10:00:00 -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --prePrune --preFeatures
+./scripts/HPC/exec_P2.sh --time 1-10:00:00 -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --prePrune --preFeatures
+./scripts/HPC/exec_P2.sh --time 1-10:00:00 -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --prePrune --preFeatures
+./scripts/HPC/exec_P2.sh --time 1-10:00:00 -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --prePrune --preFeatures
 
 #############################################################################
 # Random Search
 #############################################################################
 # Phase 1
-./scripts/HPC/exec_P1.sh --time 01:00:00 --nick mix -m 8 -N 10 -r 50 -c TOSEM -t ICS_Baseline --data res/industrial/ICS_20a.csv --cpus 3 --quanta 0.01 --simpleSearch -i 1500
-./scripts/HPC/exec_P1.sh --time 02:00:00 --nick mix -m 8 -N 10 -r 50 -c TOSEM -t UAV_Baseline --data res/industrial/UAV_50a.csv --cpus 3 --quanta 0.01 --simpleSearch -i 1500
+./scripts/HPC/exec_P1.sh --time 01:00:00 -m 8 -N 10 -r 50 -c TOSEM -t ICS_Baseline --data res/industrial/ICS_20a.csv --cpus 3 --quanta 0.01 --simpleSearch -i 1500
+./scripts/HPC/exec_P1.sh --time 02:00:00 -m 8 -N 10 -r 50 -c TOSEM -t UAV_Baseline --data res/industrial/UAV_50a.csv --cpus 3 --quanta 0.01 --simpleSearch -i 1500
 
 # Phase 2 - Best Size calculate (Phase2 for Random Search, Taking long time)
-./scripts/HPC/exec_P2_RS.sh --time 1-10:00:00 --nick mix -m 8 -N 10 -r 50 -c TOSEM -t ICS_Baseline -q 0.01
-./scripts/HPC/exec_P2_RS.sh --time 1-00:00:00 --nick mix -m 8 -N 10 -r 50 -c TOSEM -t UAV_Baseline -q 0.01
+./scripts/HPC/exec_P2_RS.sh --time 5:00:00 -m 8 -N 10 -r 50 -c TOSEM -t ICS_Baseline -q 0.01
+./scripts/HPC/exec_P2_RS.sh --time 5:00:00 -m 8 -N 10 -r 50 -c TOSEM -t UAV_Baseline -q 0.01
 
 # ADCS Random Phase 1
-./scripts/HPC/exec_P1.sh --time 1-20:00:00 --nick mix -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ADCS_Baseline --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 --simpleSearch -i 1500
-./scripts/HPC/exec_P1.sh --time 1-20:00:00 --nick mix -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ADCS_Baseline --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 --simpleSearch -i 1500
-./scripts/HPC/exec_P1.sh --time 1-20:00:00 --nick mix -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ADCS_Baseline --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 --simpleSearch -i 1500
-./scripts/HPC/exec_P1.sh --time 1-20:00:00 --nick mix -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ADCS_Baseline --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 --simpleSearch -i 1500
-./scripts/HPC/exec_P1.sh --time 1-20:00:00 --nick mix -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ADCS_Baseline --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 --simpleSearch -i 1500
+./scripts/HPC/exec_P1.sh --time 2-00:00:00 -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ADCS_Baseline --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 --simpleSearch -i 1500
+./scripts/HPC/exec_P1.sh --time 2-00:00:00 -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ADCS_Baseline --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 --simpleSearch -i 1500
+./scripts/HPC/exec_P1.sh --time 2-00:00:00 -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ADCS_Baseline --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 --simpleSearch -i 1500
+./scripts/HPC/exec_P1.sh --time 2-00:00:00 -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ADCS_Baseline --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 --simpleSearch -i 1500
+./scripts/HPC/exec_P1.sh --time 2-00:00:00 -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ADCS_Baseline --data res/industrial/ADCS.csv --cpus 1 --max 1800000 --quanta 0.1 --simpleSearch -i 1500
 
 # ADCS Random Phase 2
-./scripts/HPC/exec_P2_RS.sh --time 2:00:00 --nick mix -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ADCS_Baseline -q 0.1
-./scripts/HPC/exec_P2_RS.sh --time 2:00:00 --nick mix -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ADCS_Baseline -q 0.1
-./scripts/HPC/exec_P2_RS.sh --time 2:00:00 --nick mix -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ADCS_Baseline -q 0.1
-./scripts/HPC/exec_P2_RS.sh --time 2:00:00 --nick mix -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ADCS_Baseline -q 0.1
-./scripts/HPC/exec_P2_RS.sh --time 2:00:00 --nick mix -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ADCS_Baseline -q 0.1
+./scripts/HPC/exec_P2_RS.sh --time 2:00:00 -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ADCS_Baseline -q 0.1
+./scripts/HPC/exec_P2_RS.sh --time 2:00:00 -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ADCS_Baseline -q 0.1
+./scripts/HPC/exec_P2_RS.sh --time 2:00:00 -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ADCS_Baseline -q 0.1
+./scripts/HPC/exec_P2_RS.sh --time 2:00:00 -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ADCS_Baseline -q 0.1
+./scripts/HPC/exec_P2_RS.sh --time 2:00:00 -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ADCS_Baseline -q 0.1
 
 
 #############################################################################
 # round Trip
 #############################################################################
 # ICS Round trip
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400499 --nick mix -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ICS_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400500 --nick mix -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ICS_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400501 --nick mix -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ICS_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400502 --nick mix -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ICS_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400503 --nick mix -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ICS_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400499 -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ICS_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400500 -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ICS_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400501 -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ICS_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400502 -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ICS_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400503 -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ICS_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
 
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400512 --nick mix -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ICS_Baseline   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400512 --nick mix -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ICS_Baseline   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400512 --nick mix -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ICS_Baseline   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400512 --nick mix -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ICS_Baseline   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400512 --nick mix -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ICS_Baseline   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400512 -m 8 -N 10 --start  1 -r 10 -c TOSEM -t ICS_Baseline   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400512 -m 8 -N 10 --start 11 -r 20 -c TOSEM -t ICS_Baseline   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400512 -m 8 -N 10 --start 21 -r 30 -c TOSEM -t ICS_Baseline   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400512 -m 8 -N 10 --start 31 -r 40 -c TOSEM -t ICS_Baseline   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400512 -m 8 -N 10 --start 41 -r 50 -c TOSEM -t ICS_Baseline   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
 
 # UAV Round trip
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400514 --nick mix -m 8 -N 10 --start  1 -r 10 -c TOSEM -t UAV_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400515 --nick mix -m 8 -N 10 --start 11 -r 20 -c TOSEM -t UAV_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400516 --nick mix -m 8 -N 10 --start 21 -r 30 -c TOSEM -t UAV_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400517 --nick mix -m 8 -N 10 --start 31 -r 40 -c TOSEM -t UAV_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400518 --nick mix -m 8 -N 10 --start 41 -r 50 -c TOSEM -t UAV_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400514 -m 8 -N 10 --start  1 -r 10 -c TOSEM -t UAV_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400515 -m 8 -N 10 --start 11 -r 20 -c TOSEM -t UAV_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400516 -m 8 -N 10 --start 21 -r 30 -c TOSEM -t UAV_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400517 -m 8 -N 10 --start 31 -r 40 -c TOSEM -t UAV_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400518 -m 8 -N 10 --start 41 -r 50 -c TOSEM -t UAV_SAFE   --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
 
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400513 --nick mix -m 8 -N 10 --start  1 -r 10 -c TOSEM -t UAV_Baseline --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400513 --nick mix -m 8 -N 10 --start 11 -r 20 -c TOSEM -t UAV_Baseline --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400513 --nick mix -m 8 -N 10 --start 21 -r 30 -c TOSEM -t UAV_Baseline --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400513 --nick mix -m 8 -N 10 --start 31 -r 40 -c TOSEM -t UAV_Baseline --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
-./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400513 --nick mix -m 8 -N 10 --start 41 -r 50 -c TOSEM -t UAV_Baseline --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400513 -m 8 -N 10 --start  1 -r 10 -c TOSEM -t UAV_Baseline --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400513 -m 8 -N 10 --start 11 -r 20 -c TOSEM -t UAV_Baseline --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400513 -m 8 -N 10 --start 21 -r 30 -c TOSEM -t UAV_Baseline --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400513 -m 8 -N 10 --start 31 -r 40 -c TOSEM -t UAV_Baseline --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
+./scripts/HPC/exec_P3.sh --time 1:00:00 --dependency 2400513 -m 8 -N 10 --start 41 -r 50 -c TOSEM -t UAV_Baseline --cpus 3 --max 0 --quanta 0.01 --nTest 200 --nWCETs 200
 
 # Round trip for ADCS
 # To reduce execution time, Roundtrip supports partitioning
@@ -111,17 +112,17 @@ done
 
 
 # Round trip for ADCS (Normal parallel work, it will take over 48 hours)
-./scripts/HPC/exec_P3.sh --nick mix -N 10 --mem 8 --start  1 -r 10 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
-./scripts/HPC/exec_P3.sh --nick mix -N 10 --mem 8 --start 11 -r 20 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
-./scripts/HPC/exec_P3.sh --nick mix -N 10 --mem 8 --start 21 -r 30 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
-./scripts/HPC/exec_P3.sh --nick mix -N 10 --mem 8 --start 31 -r 40 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
-./scripts/HPC/exec_P3.sh --nick mix -N 10 --mem 8 --start 41 -r 50 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
+./scripts/HPC/exec_P3.sh -N 10 --mem 8 --start  1 -r 10 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
+./scripts/HPC/exec_P3.sh -N 10 --mem 8 --start 11 -r 20 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
+./scripts/HPC/exec_P3.sh -N 10 --mem 8 --start 21 -r 30 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
+./scripts/HPC/exec_P3.sh -N 10 --mem 8 --start 31 -r 40 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
+./scripts/HPC/exec_P3.sh -N 10 --mem 8 --start 41 -r 50 -c TOSEM -t ADCS_SAFE --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
 
-./scripts/HPC/exec_P3.sh --nick mix -N 10 --mem 8 --start  1 -r 10 -c TOSEM -t ADCS_Baseline --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
-./scripts/HPC/exec_P3.sh --nick mix -N 10 --mem 8 --start 11 -r 20 -c TOSEM -t ADCS_Baseline --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
-./scripts/HPC/exec_P3.sh --nick mix -N 10 --mem 8 --start 21 -r 30 -c TOSEM -t ADCS_Baseline --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
-./scripts/HPC/exec_P3.sh --nick mix -N 10 --mem 8 --start 31 -r 40 -c TOSEM -t ADCS_Baseline --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
-./scripts/HPC/exec_P3.sh --nick mix -N 10 --mem 8 --start 41 -r 50 -c TOSEM -t ADCS_Baseline --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
+./scripts/HPC/exec_P3.sh -N 10 --mem 8 --start  1 -r 10 -c TOSEM -t ADCS_Baseline --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
+./scripts/HPC/exec_P3.sh -N 10 --mem 8 --start 11 -r 20 -c TOSEM -t ADCS_Baseline --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
+./scripts/HPC/exec_P3.sh -N 10 --mem 8 --start 21 -r 30 -c TOSEM -t ADCS_Baseline --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
+./scripts/HPC/exec_P3.sh -N 10 --mem 8 --start 31 -r 40 -c TOSEM -t ADCS_Baseline --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
+./scripts/HPC/exec_P3.sh -N 10 --mem 8 --start 41 -r 50 -c TOSEM -t ADCS_Baseline --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume
 
 ## resume example (set --resume over 1)
 #./scripts/HPC/exec_P3.sh --nick mix -N 10 --mem 8 --list 09,12 -c TOSEM -t ADCS_Baseline --cpus 1 --max 1800000 --quanta 0.1 --nTest 200 --nWCETs 200 --resume

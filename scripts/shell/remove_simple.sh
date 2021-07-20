@@ -65,14 +65,6 @@ for sub in ${BASE_PATH}/*; do
 	${CMD_PREFIX} rm -rf ${sub}/${REMOVE}
 done
 
-#scripts/HPC/remove_simple.sh -b results/TOSEM_bf2/ICS_20a_SAFE -t _phase2/_samples
-#scripts/HPC/remove_simple.sh -b results/TOSEM_bf2/UAV_50a_SAFE -t _phase2/_samples
-#scripts/HPC/remove_simple.sh -b results/TOSEM_bf2/ESAIL_SAFE -t _phase2/_samples
-
-#scripts/HPC/remove_simple.sh -b results/TOSEM_bf2/ICS_20a_SAFE -t _dist
-#scripts/HPC/remove_simple.sh -b results/TOSEM_bf2/UAV_50a_SAFE -t _dist
-#scripts/HPC/remove_simple.sh -b results/TOSEM_bf2/ESAIL_SAFE -t _dist
-
-#scripts/HPC/remove_simple.sh -b results/TOSEM_bf2/ICS_20a_SAFE -t _random
-#scripts/HPC/remove_simple.sh -b results/TOSEM_bf2/UAV_50a_SAFE -t _random
-#scripts/HPC/remove_simple.sh -b results/TOSEM_bf2/ESAIL_SAFE -t _random
+#scripts/shel/remove_simple.sh -b results/TOSEM/ICS_SAFE -t _phase2/_samples
+#scripts/shel/remove_simple.sh -b results/TOSEM/UAV_SAFE -t _phase2/_samples
+#scripts/shel/remove_simple.sh -b results/TOSEM/ADCS_SAFE -t _phase2/_samples
