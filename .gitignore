@@ -13,8 +13,15 @@ metas/
 META-INF/
 *.log
 *.log.*
-artifacts/scripts
-artifacts/settings.json
+
+############################
+## script settings
+############################
+.Rhistory
+*.pyc
+__pycache__
+.DS_Store
+.Rproj.user
 
 ############################
 ## log files
@@ -27,7 +34,6 @@ artifacts/settings.json
 ############################
 logs/
 venv/
-.Rproj.user
 results/
-
 res/backup
+artifacts/scripts
