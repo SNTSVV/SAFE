@@ -1,7 +1,7 @@
 #!/bin/bash -l
 
 #
-#SBATCH --time=1-00:00:00
+#SBATCH --time=0-01:00:00
 #SBATCH --mail-type=all
 #SBATCH --mail-user=jaekwon.lee@uni.lu
 #SBATCH --qos=normal

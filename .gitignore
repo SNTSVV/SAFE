@@ -13,6 +13,8 @@ metas/
 META-INF/
 *.log
 *.log.*
+artifacts/scripts
+artifacts/settings.json
 
 ############################
 ## log files
@@ -27,8 +29,5 @@ logs/
 venv/
 .Rproj.user
 results/
-res/
-scripts/executes
-scripts/R
-scripts/utils
-scripts/schedule
+
+res/backup
