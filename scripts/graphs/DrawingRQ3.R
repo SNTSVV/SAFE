@@ -1,8 +1,7 @@
-# Title     : TODO
-# Objective : TODO
-# Created by: jaekwon.lee
-# Created on: 4/14/21
-# Distance based sampling for JAVA_RUN
+# Title     : Drawing RQ3 graphs
+# Usage Example:
+# Rscript scripts/graphs/DrawingRQ3.R results/TOSEM/_analysis/EXP3 ADCS,ICS,UAV
+
 options(warn=-1)
 ############################################################
 # Load libraries
@@ -30,7 +29,7 @@ getENV<-function(codeBase=NULL){
   return (env)
 }
 ENV<-getENV("scripts/graphs")   # the codeBase parameter is for debug, it will be ignored when this script is executed by RScript
-# ENV$PARAMS<- c("results/TOSEM/_analysis/EXP3")
+# ENV$PARAMS<- c("results/TOSEM/_analysis/EXP3", "ADCS,ICS,UAV")
 print(sprintf("WORK_PATH : %s", ENV$BASE))
 print(sprintf("FILE      : %s", ENV$FILE))
 print(sprintf("CODE_BASE : %s", ENV$CODE_BASE))
