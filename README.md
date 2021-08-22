@@ -13,9 +13,9 @@ SAFE runs on the following operating systems:
 
 
 ### SAFE requires the following tools:
-- Java 1.8.0.241
-- R 3.6.2 or above (required libraries: MASS, dplyr, MLmetrics, randomForest, nloptr, stringr, effsize, scales, ggplot2, gridExtra)
-- Python 3.6.8 or above (required libraries: tqdm)
+- Java 1.8.0.241 (Dependencies: see the file SAFE/pom.xml)
+- R 3.6.2 or above (Dependencies: see the file scripts/graphs/requirements.R)
+- Python 3.6.8 or above (Dependencies: tqdm)
 
  
 ### Folders and files description
