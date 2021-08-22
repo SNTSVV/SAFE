@@ -4,7 +4,7 @@ from data.ResultFileLoader import ResultFileLoader
 
 
 class ScheduleConverter(ResultFileLoader):
-    formatOutput = 'draws/intermediate_%d.csv'
+    formatOutput = 'draws/intermediate_%d_%d.csv'
 
     def __init__(self):
         super(ResultFileLoader, self).__init__()
@@ -76,16 +76,16 @@ class ScheduleConverter(ResultFileLoader):
     #     output.close()
     #     pass
 
-    def run(self, _filepath, _solutionID):
+    def run(self, _filepath, _solutionID, _sampleID):
         #load data
-        fpath = os.path.join(_filepath, '_schedules/sol%d.json'%(_solutionID))
+        fpath = os.path.join(_filepath, '_phase1/debug/sol%d_sample%d_schedules.json'%(_solutionID, _sampleID))
         schedules = self.load_schedules(fpath)
 
-        fpath = os.path.join(_filepath, '_priorities/sol%d.json'%(_solutionID))
+        fpath = os.path.join(_filepath, '_phase1/debug/sol%d_sample%d_priorities.json'%(_solutionID, _sampleID))
         priorities = self.load_priorities(fpath)
 
         # generate parent dir
-        outputFile = os.path.join(_filepath, self.formatOutput%(_solutionID))
+        outputFile = os.path.join(_filepath, self.formatOutput%(_solutionID, _sampleID))
         parent = os.path.dirname(outputFile)
         if not os.path.exists(parent):
             os.makedirs(parent)
@@ -98,7 +98,7 @@ class ScheduleConverter(ResultFileLoader):
 
 
 if __name__ == "__main__":
-    for solID in range(0, 10):
-        ScheduleConverter().run('results/HPSS_test2', _solutionID=solID)
+    # for solID in range(1, 10):
+    ScheduleConverter().run('results/Test/ICS2', _solutionID=1, _sampleID=0)
 
 
