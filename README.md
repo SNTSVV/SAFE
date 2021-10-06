@@ -19,11 +19,17 @@ SAFE runs on the following operating systems:
 
  
 ### Folders and files description
-* *artifacts*: Containing Java executable files
 * *res*: Containing the input task description
 * *SAFE*: source codes for Java executable files and scripts
 * *scripts*: Containing Python and R scripts to help the EXPs and generate graphs
 * *run_*.sh*: Shell scripts for executing each EXPs in the paper
+
+
+### How to create OPAM executable jar files?
+Given the pre-configured POM files for Maven in the *SAFE* folder, you can create jar files which are used in the shell script files. Please execute the below commands in the *SAFE* folder.
+* *SafeSearch.jar*: mvn -f search.pom -DoutputJar=../artifacts package
+* *SafeRefinement-Ext.jar*: mvn -f refinement.pom -DoutputJar=../artifacts package
+* *RoundTrip.jar*: mvn -f roundtrip.pom -DoutputJar=../artifacts package
 
 
 ### How to run SAFE?
