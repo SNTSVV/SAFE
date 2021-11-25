@@ -26,7 +26,7 @@ SAFE runs on the following operating systems:
 
 
 ### How to create OPAM executable jar files?
-Given the pre-configured POM files for Maven in the *SAFE* folder, you can create jar files which are used in the shell script files. Please execute the below commands in the *SAFE* folder.
+Given the pre-configured POM files for Maven in the *SAFE* folder, you can create jar files that are used in the shell script files in the *scripts* folder. Please execute the below commands in the *SAFE* folder.
 * *SafeSearch.jar*: mvn -f search.pom -DoutputJar=../artifacts package
 * *SafeRefinement.jar*: mvn -f refinement.pom -DoutputJar=../artifacts package
 * *RoundTrip.jar*: mvn -f roundtrip.pom -DoutputJar=../artifacts package
