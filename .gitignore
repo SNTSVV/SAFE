@@ -36,4 +36,4 @@ logs/
 venv/
 results/
 res/backup
-artifacts/scripts
+artifacts
