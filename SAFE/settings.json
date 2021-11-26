@@ -1,0 +1,58 @@
+{
+  // basic variables
+  "INPUT_FILE"          : "../res/industrial/ICS_20a.csv", // The path of task descriptions,
+  "BASE_PATH"           : "../results/test",              // The path will be stored all the experiment outputs in Phase 1, It will be used the input base path for the Phase 2.
+  "WORKNAME_P1"         : "_phase1",                     // work path for phase 1 inside of BASE_PATH
+  "WORKNAME_P2"         : "_phase2",                      // work path for phase 2 inside of BASE_PATH
+  "FORMULA_PATH"        : "_formula",                     // Formula path inside of BASE_PATH
+  "WORKNAME_EV"         : "_roundtrip",                   // work path for evaluating inside of BASE_PATH
+  "WORKNAME_EX"         : "",                             // work path for debugging inside of BASE_PATH
+  "SCRIPT_PATH"         : "scripts/R",
+  "RUN_MAX"             : 0,                              // Total number of experiments, if you set RUN_NUM != 0, this option will be ignored
+  "RUN_NUM"             : 0,                              // Identity of the experiments, if you set RUN_NUM = 1, BASE_PATH will be changed to <BASE_PATH>/Run01
+
+  // Scheduler variables
+  "SCHEDULER"           : "SQMScheduler",   // "RMSchedulerBest",
+  "TARGET_TASKLIST"     : "",                // Set the identities of tasks seperated by comma(,)
+  "TIME_QUANTA"         : 0.1,               // Scheduler time unit
+  "TIME_MAX"            : 0,                  // Maximum simulation time of the scheduler
+  "EXTEND_SCHEDULER"    : true,              // Please set true, if you want to execute scheduler after finished the simulation time for
+  "N_CPUS"              : 1,
+
+  // Genetic algorithm variables
+  "GA_POPULATION"       : 10,         // Population size for GA
+  "GA_ITERATION"        : 1000,       // Number of iteration for GA
+  "GA_CROSSOVER_PROB"   : 0.7,        // Crossover rate, which is the probability of applying crossover operation to the chromosome
+  "GA_CROSSOVER_TYPE"   : "one",      // Type of crossover operation, "one": one-point crossover, "uniform": uniform crossover
+  "GA_MUTATION_PROB"    : 0.2,        // Mutataion rate, which is the probability of applying mutation operation to the chromosome
+  "SIMPLE_SEARCH"       : false,      // If this option is true, we do not apply genetic operators such as crossover, mutataion, and replacement
+  "N_SAMPLE_WCET"       : 20,         // The number of WCET examples to simulate with a chromosome
+
+  // preprocessing
+  "PRE_ONLY"			: false,
+  "PRE_FEATURES"        : false,
+  "PRE_PRUNE"           : false,
+  "PRE_TEST"            : false,
+  "N_TEST_SOLUTIONS"    : 1000,      // The number of test solutions to be generated
+  "PARTITION_ID"        : 0,
+  "PARTITION_MAX"       : 0,
+
+  //Second phase
+  "N_TERMS"             : 0,
+  "SAMPLING_METHOD"     : "distance", //distance", // Sampling approach for the Phase 2, {"distance", "random"}
+  "N_MODEL_UPDATES"     : 100,        // The number of model refinements
+  "N_SAMPLE_SOLUTIONS"  : 10,         // The number of sample WCETs for model updates (N_SAMPLE* # of Phase1 solutions will be evaluated)
+  "N_SAMPLE_CANDIDATES" : 20,         // The number of candidates for deciding one example for the distance-based sampling
+  "MODEL_PROB_PRECISION": 0.0001,     // A precision of the classification threshold,
+
+  "P2_ALGORITHM"        : "threshold",// the way of model refinement, we use only "threshold"
+  "STOP_ACCEPT_RATE"    : 0.0001,     // Not used, stopping criterion
+  "STOP_CONDITION"      : false,      // Not used, Enable stopping creteria when the model refinements
+  "USE_TEST_DATA"       : false,      // Load the test data from "<BASE_PATH>/testdata.csv" when it sets to true (for evaluating a model)
+  "TEST_DATA_PATH"      : "",
+
+  // special options
+  "RESUME"              : false,
+  "DEBUG"               : false,
+  "REMOVE_SAMPLES"	    : false
+}
