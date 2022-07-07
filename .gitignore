@@ -37,3 +37,7 @@ venv/
 results/
 res/backup
 artifacts
+
+res/industrial_new
+res/synthetic*/
+res/
